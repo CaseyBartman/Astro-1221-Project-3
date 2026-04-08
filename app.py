@@ -1,7 +1,6 @@
 import streamlit as st
-import pandas as pd
-# Assuming data_loader.py and constants.py are in a /src directory
 from src.data_loader import SupernovaDataLoader
+from src.data_processor import SupernovaDataProcessor
 
 def render_pipeline_tester():
     """Renders a simple UI to trigger and validate the data loading pipeline."""
@@ -14,19 +13,19 @@ def render_pipeline_tester():
 def execute_and_display_pipeline():
     """Executes the data loading steps and displays the resulting DataFrame."""
     pipeline_loader = SupernovaDataLoader()
+    data_processor = SupernovaDataProcessor()
     
-    with st.spinner("Fetching and flattening data..."):
+    with st.spinner("Fetching, flattening, and processing data..."):
         try:
-            # Step 1: Download the raw JSON
+            # Step 1: Extract
             pipeline_loader.fetch_and_save_json()
+            raw_supernova_records = pipeline_loader.parse_supernova_objects()
             
-            # Step 2: Parse the Wolfram AST into a clean list of dicts
-            supernova_records = pipeline_loader.parse_supernova_objects()
+            # Step 2: Transform
+            clean_supernova_dataframe = data_processor.process_raw_records(raw_supernova_records)
             
-            # Step 3: Convert to DataFrame for easy viewing
-            supernova_df = pd.DataFrame(supernova_records)
-            
-            show_success_metrics(supernova_df)
+            # Step 3: Validate
+            show_success_metrics(clean_supernova_dataframe)
             
         except Exception as error:
             st.error(f"Pipeline Execution Failed: {error}")

@@ -18,17 +18,24 @@ SUPERNOVA_KEYS = {
     'STRETCH': 'stretch',
     'COLOR': 'color'
 }
-# Expected CSV Column Names
-columnSupernovaName = "name"
-columnRedshiftValue = "redshift"
-columnApparentMagnitude = "magnitude"
-columnStretchFactor = "stretch"
-columnColorValue = "color"
 
-# Expected Output Data Columns (After Standardization)
-columnDistanceModulus = "distance_modulus"
-columnDistanceModulusError = "distance_modulus_error"
+NUMERICAL_PHYSICS_COLUMNS = [
+    SUPERNOVA_KEYS['REDSHIFT'],
+    SUPERNOVA_KEYS['MAGNITUDE'],
+    SUPERNOVA_KEYS['STRETCH'],
+    SUPERNOVA_KEYS['COLOR']
+]
 
-# Physics Constants
-speedOfLightKilometersPerSecond = 299792.458
+# -------------- Physics & Cosmological Constants --------------
+# -------------- Physics & Cosmological Constants --------------
+SPEED_OF_LIGHT_KM_S = 299792.458 
 
+# Distance Modulus Formula Constants (\mu = 5 * log10(d) + 25)
+DISTANCE_MODULUS_LOG_MULTIPLIER = 5.0
+DISTANCE_MODULUS_OFFSET = 25.0
+
+# Standardization (Tripp Relation) Baseline Guesses
+# These are standard initial approximations for Type Ia supernovae
+TRIPP_ALPHA = 0.14
+TRIPP_BETA = 3.1
+ABSOLUTE_MAGNITUDE_M = -19.3
