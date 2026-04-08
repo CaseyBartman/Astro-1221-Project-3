@@ -1,9 +1,16 @@
 # Astro-1221-Project-3
 
-Command to install packages: 
+### Command to install packages: 
 **$ pip install streamlit, pandas, scipy**
 
+### App instructions:
+To run the app:
+**$ streamlit run app.py**
 
+# Project Goal:
+To fit the relationship between supernova distance, redshift, and measure the universe's expansion. We load MANY supernovae with measured values and implement the Hubble law model, fitting appropriately with the Hubble constants and plotting everything via streamlit. 
+
+See requirements.txt for more information on class architecture and other file structure information.
 
 # Scientific Bibliography:
 ### Tripp Relation:  
@@ -29,3 +36,8 @@ This is the compilation set that we used to grab the supernova data. We'll cite 
 1) Suzuki, N., et al. (The Supernova Cosmology Project) (2012). The Hubble Space Telescope Cluster Supernova Survey: V. Improving the Dark Energy Constraints Above z>1 and Building an Early-type-hosted Supernova Sample. The Astrophysical Journal, 746(1), 85. https://arxiv.org/abs/1105.3470
 
 2) The previous source links to this project: https://supernova.lbl.gov/Union/ We used a subset compilation formatted for easier parsing here: https://datarepository.wolframcloud.com/resources/Type-Ia-Supernova-Data/
+
+
+## AI Usage in Project:
+- Casey: 
+ - I used AI a bit more in this project compared to others, mainly to help fill in the gaps of my astronomical knowledge. In terms of the implementation details and architectural decisions for essentially the entire projectr, I did those myself. I only use LLMs and agentic coding to help with "busywork" boilerplate tasks, so having it help with the documentation was extremely useful- especially because I wasn't very familiar with the astronomical context behind this project. I did use it to help double check with the sources and make sure my formulas that were used were accurate and well implemented. 
