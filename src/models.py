@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.integrate import quad
-from constants import (
+from src.constants import (
     SPEED_OF_LIGHT_KM_S,
     DISTANCE_MODULUS_LOG_MULTIPLIER,
     DISTANCE_MODULUS_OFFSET,
