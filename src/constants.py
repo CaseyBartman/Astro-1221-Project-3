@@ -39,3 +39,9 @@ DISTANCE_MODULUS_OFFSET = 25.0
 TRIPP_ALPHA = 0.14
 TRIPP_BETA = 3.1
 ABSOLUTE_MAGNITUDE_M = -19.3
+
+# -------------- Optimizer Initial Guesses --------------
+# Best current estimates from Planck 2018 / local distance ladder
+INITIAL_HUBBLE_CONSTANT_GUESS = 70.0 ## km/s/Mpc
+INITIAL_MATTER_DENSITY_GUESS = 0.3 ## Omega_m (no dimensions)
+INITIAL_DARK_ENERGY_DENSITY_GUESS = 0.7 ## Omega_Lambda (no dimensions)
