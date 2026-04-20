@@ -42,26 +42,40 @@ class SupernovaCosmologyModels:
         """
         # FORMULA: mu = m + (alpha * s) - (beta * c) - M
         # Where m is magnitude, s is stretch, c is color, and M is absolute magnitude.
-        stretchCorrection = TRIPP_ALPHA * stretchFactor
+        stretchCorrection = TRIPP_ALPHA * (stretchFactor - 1.0)
+        ##We just needed to subtract 1.0 from the stretch factor because the Tripp Relation is based on the stretch factor being 1.0.
+        ##We wanted to claim that M=-19.3 because it's the absolute magnitude of a Type Ia supernova. But since M effective is -19.44, we need to tweak the stretch factor a tad
+        ## This now makes the code match Tripp's equaion, M now equals -19.3
         colorCorrection = TRIPP_BETA * colorValue
         
         standardizedModulus = observedMagnitude + stretchCorrection - colorCorrection - ABSOLUTE_MAGNITUDE_M
         return standardizedModulus
 
-    def calculate_simple_hubble_model(self, redshiftValues, hubbleConstant):
+    def calculate_empty_universe_model(self, redshiftValues, hubbleConstant):
         """
-        Calculates theoretical distance modulus using the low-redshift linear approximation.
+        Calculates theoretical distance modulus for an empty universe.
+
+        An empty universe has Omega_m = 0 and Omega_Lambda = 0 there isno matter and no dark energy. 
+
+            d_L = (c * z * (1 + z)) / H_0
+
+        The (1 + z) factor accounts for two cosmological effects on observed flux: the redshifting of photon energy, and the time dilation between photon
+        arrivals (Ryden & Peterson eq. 24.40-24.42). If we take the limit to z<<1 (so not realtivistic) this goes to the classical Hubble law d_L approx c*z/H_0.
+
+        This model serves as a null-hypothesis comparison curve: if the data prefer
+        our Consensus Model fit over this empty-universe curve, that is direct
+        evidence for the presence of matter and/or dark energy in the universe.
 
         Args:
             redshiftValues (float | pd.Series): The measured redshift (z) of the supernovae.
             hubbleConstant (float): The Hubble constant (H0) in km/s/Mpc to test.
 
         Returns:
-            float | pd.Series: The theoretical distance modulus predicted by a linear universe.
+            float | pd.Series: The theoretical distance modulus for an empty universe.
         """
-        # FORMULA: d_L = (c * z) / H_0
+        # FORMULA: d_L = (c * z * (1 + z)) / H_0
         # Where c is the speed of light, z is redshift, and H_0 is the Hubble constant.
-        luminosityDistanceMpc = (SPEED_OF_LIGHT_KM_S * redshiftValues) / hubbleConstant
+        luminosityDistanceMpc = (SPEED_OF_LIGHT_KM_S * redshiftValues * (1.0 + redshiftValues)) / hubbleConstant
         
         # FORMULA: mu = 5 * log10(d_L) + 25
         return self._convert_distance_to_modulus(luminosityDistanceMpc)
@@ -116,3 +130,7 @@ class SupernovaCosmologyModels:
         expansionFactorSquared = matterComponent + darkEnergyDensity
         
         return 1.0 / np.sqrt(expansionFactorSquared)
+
+        ## we assume a spatially flat universe where Omega_k =0. Radition is negligible at these redshifts.
+        ## our current equation for E(Z) drops the radiation term and curvarture terms.
+        ## dropping the curvature term is fine for now... i will likely come back tomorrow to add on a couple fixes that would explore potentailly non-flat points.
