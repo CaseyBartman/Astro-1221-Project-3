@@ -26,7 +26,7 @@ class SupernovaOptimizer:
         Note to Groupmate 2:
         Use the constants.py file for your p0 (initial guesses). No magic values!
         """
-        # TODO: Wrap scipy.optimize.curve_fit passing self.cosmology_models.calculate_simple_hubble_model
+        # TODO: Wrap scipy.optimize.curve_fit passing self.cosmology_models.calculate_simple_hubble_model --- ive changed it to calculate_empty_univesre_model
         pass
 
     def fit_advanced_cosmological_model(self, redshiftValues, actualDistanceModuli):
