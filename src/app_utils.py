@@ -2,11 +2,9 @@
 Shared helpers for the Streamlit application.
 
 All Streamlit pages import from this module so that data loading is cached
-(avoiding repeated downloads and re-parsing of the Union2.1 JSON file) and
+(avoiding repeated downloads and re-parsing of the JLA JSON file) and
 so that plots across pages share a consistent visual style.
-
-Author:
-    Lauren Bryant 
+ 
 Contents:
     get_supernova_dataframe   
     configure_plot_style        
@@ -33,13 +31,13 @@ COLOUR_PANEL      = "#13233a"
 COLOUR_TEXT       = "#e8eef5"
 COLOUR_MUTED      = "#7a8ba3"
 COLOUR_DATA       = "#4ecdc4"   # teal -- observed supernovae
-COLOUR_FIT        = "#ffa62b"   # amber -- best-fit / consensus
-COLOUR_EMPTY      = "#a17cd9"   # violet -- empty (Milne) universe
+COLOUR_FIT        = "#ffa62b"   # amber -- best-fit 
+COLOUR_EMPTY      = "#a17cd9"   # violet -- empty universe
 COLOUR_MATTER     = "#e65a7a"   # rose   -- matter-only (Einstein-de Sitter)
 COLOUR_GRID       = "#1f3350"
 
 
-@st.cache_data(show_spinner="Fetching the Union2.1 supernova compilation...")
+@st.cache_data(show_spinner="Fetching the JLA supernova compilation...")
 def get_supernova_dataframe():
     """
     Load, parse, and clean the Type Ia supernova dataset. Downloads the

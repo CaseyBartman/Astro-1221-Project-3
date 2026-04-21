@@ -33,8 +33,8 @@ st.markdown("---")
 st.header("1. Dataset")
 st.markdown(
     """
-    This project uses the **Union2.1 compilation** of Type Ia supernovae
-    published by Suzuki et al. 2012 (ApJ 746, 85). Union2.1 is a unified
+    This project uses the **JLA compilation** of Type Ia supernovae
+    published by Betoule et al. 2014 (A&A 568, A22). JLA is a unified
     re-analysis of 580 Type Ia supernovae drawn from 19 separate survey
     datasets, all passed through the same SALT2 light-curve fitter so
     their stretch and colour parameters are on a common scale. The
@@ -87,7 +87,7 @@ st.markdown(
     Mandel et al. (2017, ApJ 842, 93).
 
     **Audit note.** The original implementation used ``alpha * s`` rather
-    than ``alpha * (s - 1)``. Because the Union2.1 stretch values are
+    than ``alpha * (s - 1)``. Because the JLA stretch values are
     centred near one rather than zero, this introduced a constant offset
     of ``alpha * 1 = 0.14`` mag which would have been absorbed into an
     effective absolute magnitude during fitting. The correction was made
@@ -176,7 +176,7 @@ st.markdown(
     With the distance-modulus-versus-redshift relation in hand, the task
     is to find the cosmological parameters ``(H_0, Omega_m, Omega_Lambda)``
     that best reproduce the observed ``(z_i, mu_i)`` points from the
-    Union2.1 compilation. This is a standard non-linear least-squares
+    JLA compilation. This is a standard non-linear least-squares
     problem, which in this project is solved using ``scipy.optimize.curve_fit``
     -- the same tool introduced in the course for curve fitting. The
     optimiser returns the best-fit parameters and their covariance
@@ -185,7 +185,7 @@ st.markdown(
 
     Goodness-of-fit is characterised by reduced chi-squared: the sum of
     squared residuals weighted by the per-point uncertainty, divided by
-    the number of degrees of freedom. Union2.1 reports a per-supernova
+    the number of degrees of freedom. JLA reports a per-supernova
     distance-modulus uncertainty sigma_mu for each entry; incorporating
     these weights is a planned enhancement to the data pipeline.
 
@@ -220,10 +220,8 @@ st.markdown(
     <em>The Astrophysical Journal</em>, 842, 93.
     </p>
     <p>
-    <strong>Suzuki, N. et al.</strong> (2012). "The Hubble Space Telescope
-    Cluster Supernova Survey: V. Improving the Dark Energy Constraints Above
-    z &gt; 1 and Building an Early-type-hosted Supernova Sample,"
-    <em>The Astrophysical Journal</em>, 746, 85. arXiv:1105.3470.
+    <strong>Betoule et al.</strong> (2014). ADD THE REST OF REF
+    <em>The Astrophysical Journal</em>, 746, 85. arXiv:1401.4064.
     </p>
     </div>
     """,

@@ -2,7 +2,7 @@
 Hubble Diagram page
 ===================
 
-The classic plot: distance modulus versus redshift for the Union2.1
+The classic plot: distance modulus versus redshift for the JLA
 compilation, overlaid with the best-fit Lambda-CDM cosmological model and a
 residuals panel showing the deviations of the data from that model.
 
@@ -33,7 +33,7 @@ configure_plot_style()
 
 st.title("Hubble Diagram")
 st.markdown(
-    "Distance modulus versus redshift for the Union2.1 sample, with the "
+    "Distance modulus versus redshift for the JLA sample, with the "
     "best-fit Lambda-CDM cosmology shown as a smooth curve. The lower panel "
     "shows the residuals: the scatter of each supernova around the fitted "
     "model."
@@ -116,7 +116,7 @@ else:
 ax_main.scatter(
     z_data, mu_data,
     color=COLOUR_DATA, s=14, alpha=0.7, edgecolor="none",
-    label=f"Union2.1 data (n = {len(dataframe)})",
+    label=f"JLA data (n = {len(dataframe)})",
 )
 ax_main.plot(
     z_curve, mu_curve,

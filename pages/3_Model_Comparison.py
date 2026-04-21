@@ -95,7 +95,7 @@ fig, (ax_main, ax_res) = plt.subplots(
 ax_main.scatter(
     z_data, mu_data,
     color=COLOUR_DATA, s=12, alpha=0.55, edgecolor="none",
-    label=f"Union2.1 data (n = {len(dataframe)})",
+    label=f"JLA data (n = {len(dataframe)})",
     zorder=1,
 )
 ax_main.plot(

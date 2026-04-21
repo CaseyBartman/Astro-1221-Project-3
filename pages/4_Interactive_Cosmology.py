@@ -3,7 +3,7 @@ Interactive Cosmology page
 ==========================
 
 Live sliders for ``H_0``, ``Omega_m``, and ``Omega_Lambda``. As the user
-drags, the predicted Hubble curve updates in real time over the Union2.1
+drags, the predicted Hubble curve updates in real time over the JLA
 data. Displays the present-day deceleration parameter ``q_0`` so the user
 can see directly when the universe they have built is accelerating.
 
@@ -38,7 +38,7 @@ st.title("Interactive Cosmology")
 st.markdown(
     "Drag the sliders to build your own universe. The amber curve shows "
     "what that universe predicts for the distance modulus as a function of "
-    "redshift; the teal points are the real Union2.1 measurements. For "
+    "redshift; the teal points are the real JLA measurements. For "
     "comparison, the violet dashed curve is the empty (Milne) universe, "
     "which is the natural null hypothesis."
 )
@@ -147,7 +147,7 @@ fig, ax = plt.subplots(figsize=(11, 6))
 ax.scatter(
     z_data, mu_data,
     color=COLOUR_DATA, s=12, alpha=0.55, edgecolor="none",
-    label=f"Union2.1 data (n = {len(dataframe)})",
+    label=f"JLA data (n = {len(dataframe)})",
     zorder=1,
 )
 ax.plot(

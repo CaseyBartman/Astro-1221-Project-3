@@ -2,7 +2,7 @@
 Data Explorer page
 ==================
 
- cleaned Union2.1 compilation, filter by redshift range, and
+ cleaned JLA compilation, filter by redshift range, and
 visualise the distributions of the four physical columns.
 """
 
@@ -24,7 +24,7 @@ configure_plot_style()
 
 st.title("Data Explorer")
 st.markdown(
-    "Look at the Union Type 1a supernovae complilation, each row is one"
+    "Look at the JLA Type 1a supernovae complilation, each row is one"
     "supernova with its redshift, peak apparent B-band magnitude, "
     "light-curve stretch, and colour parameter."
 )

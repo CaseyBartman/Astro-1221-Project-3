@@ -29,15 +29,19 @@ This is the standard cosmography integral used to calculate lumninosity distance
 
 1) Hogg, D. W. (1999). Distance measures in cosmology. arXiv preprint: https://arxiv.org/abs/astro-ph/9905116
 
-### Supernova Dataset (Union2.1 Compilation)
+### Supernova Dataset (JLA Compilation)
 
-This is the compilation set that we used to grab the supernova data. We'll cite both the JSON source and the original team who compiled and cleaned the dataset
+This is the compilation set that we used to grab the supernova data. We retreived the data from the Wolfram Data
+Repository. This repository hosts JLA, we initially looked at data from Union2.1 but determined that it would be better to work with about 150 more supernovae. The larger sample size produces better science results. Using the 580 in Union2.1 would make our error bars bigger simply to match a specific historical complilation. Both complilations are essentially the same, but a larger set would produce better results for us to prove the findings of the Nobel Prize winners.
 
-1) Suzuki, N., et al. (The Supernova Cosmology Project) (2012). The Hubble Space Telescope Cluster Supernova Survey: V. Improving the Dark Energy Constraints Above z>1 and Building an Early-type-hosted Supernova Sample. The Astrophysical Journal, 746(1), 85. https://arxiv.org/abs/1105.3470
+1) Fix citation for JLA Detoule et al. 2014 arXiv:1401.4064
 
-2) The previous source links to this project: https://supernova.lbl.gov/Union/ We used a subset compilation formatted for easier parsing here: https://datarepository.wolframcloud.com/resources/Type-Ia-Supernova-Data/
+2) The orginal source of Union links to: https://supernova.lbl.gov/Union/ We used a subset compilation formatted for easier parsing here: https://datarepository.wolframcloud.com/resources/Type-Ia-Supernova-Data/
 
 
 ## AI Usage in Project:
 - Casey: 
  - I used AI a bit more in this project compared to others, mainly to help fill in the gaps of my astronomical knowledge. In terms of the implementation details and architectural decisions for essentially the entire projectr, I did those myself. I only use LLMs and agentic coding to help with "busywork" boilerplate tasks, so having it help with the documentation was extremely useful- especially because I wasn't very familiar with the astronomical context behind this project. I did use it to help double check with the sources and make sure my formulas that were used were accurate and well implemented. 
+
+- Lauren:
+ - I also used a little bit more in this project for the tecnical set up for my code. I understood what I did for my last streamlit code, but I did not like how clunky it felt and I wanted a different way to structure my code. I was able to come up with a clear vision of how I wanted the pages of the app to look and some of the funtions needed to execute them. I used the Cursor assistant to create larger blocks of code as well as generate some of the larger blocks of description seen in the app. Any and all documentation explaining the is all me. I was able to do the astrophysical aspects of the project using old notes and textbooks with the occansional google of what an equation means. 

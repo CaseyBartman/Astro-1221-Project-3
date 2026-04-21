@@ -2,7 +2,7 @@
 Type Ia Supernova Hubble Diagram -- Streamlit Application
 =========================================================
 
-Main entry point and home page for the interactive Hubble-diagram viewer.
+Main entry point and home page for the app!
 Run from the project root with::
 
     streamlit run app.py
@@ -18,7 +18,6 @@ Project structure:
     src/                           
     pipeline_tester.py             
 
-Author:
     Lauren Bryant (Streamlit application and astronomical verification).
 """
 
@@ -52,7 +51,7 @@ st.markdown("---")
 narrative_col, stats_col = st.columns([3, 2], gap="large")
 
 with narrative_col:
-    st.header("What our app shows")
+    st.header("What is our Project")
     st.markdown(
         """
         In 1988, findings of Type 1a supernovae showed that these supernovae were fainter than expected
@@ -70,12 +69,12 @@ with narrative_col:
         """
     )
 
-    st.header("How to navigate")
+    st.header("How to Navigate")
     st.markdown(
         """
         Use the sidebar to move between pages.
 
-        - **Data Explorer** -- examine the dataset. Browse the 580 supernovae,
+        - **Data Explorer** -- examine the dataset. Browse the 732 supernovae,
           filter by redshift, and see the raw physical measurements.
         - **Hubble Diagram** -- the classic plot. Distance modulus versus
           redshift, overlaid with the best-fit cosmological model.
@@ -103,7 +102,7 @@ with stats_col:
         st.metric("Minimum redshift", f"z = {z_min:.3f}")
         st.metric("Maximum redshift", f"z = {z_max:.3f}")
         st.caption(
-            "Source: Suzuki et al. 2012 (Union2.1), via the Wolfram Data "
+            "Source: Betoule et al. 2014 (JLA), via the Wolfram Data "
             "Repository. See the Methodology page for full citations."
         )
     except Exception as error:

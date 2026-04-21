@@ -14,6 +14,7 @@ TO SWAP IN REAL RESULTS:
         optimizer = SupernovaOptimizer()
         results = optimizer.fit_advanced_cosmological_model(z, mu)
 
+
 """
 
 import numpy as np

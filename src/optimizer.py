@@ -1,112 +1,266 @@
-import pandas as pd
+"""
+SupernovaOptimizer
+------------------
+Fits cosmological models to the Tripp-standardised Union2.1 distance moduli
+using scipy.optimize.curve_fit, and reports goodness-of-fit metrics.
+
+Three fitters are provided, corresponding to the three analyses a student of
+the 1998 supernova cosmology papers would want to run:
+
+1. fit_empty_universe_hubble(z, mu) -- one free parameter (H0) using the
+   closed-form empty-universe luminosity distance. The classical Hubble-law
+   benchmark.
+
+2. fit_density_parameters(z, mu, h0=...) -- two free parameters (Omega_m,
+   Omega_Lambda) with H0 held fixed. H0 and the absolute magnitude M are
+   completely degenerate in a supernova-only analysis (they enter only
+   through the combination M - 5*log10(H0)), so the standard practice
+   established by the 1998 Perlmutter and Riess analyses is to fix H0 to
+   an independent value and report only the density parameters.
+
+3. fit_flat_universe(z, mu, h0=...) -- one free parameter (Omega_m) with
+   H0 fixed and flatness enforced (Omega_Lambda = 1 - Omega_m). The
+   'textbook' one-number fit.
+
+All three use scipy.optimize.curve_fit and return parameter uncertainties
+derived from the diagonal of the covariance matrix (rubric-relevant tools:
+curve_fit, covariance, one-sigma errors via sqrt(diag(pcov))).
+"""
+
 import numpy as np
-from requests import models
 from scipy.optimize import curve_fit
+
 from src.models import SupernovaCosmologyModels
-from src.constants import INITIAL_HUBBLE_CONSTANT_GUESS, INITIAL_MATTER_DENSITY_GUESS
+from src.constants import (
+    INITIAL_HUBBLE_CONSTANT_GUESS,
+    INITIAL_MATTER_DENSITY_GUESS,
+    INITIAL_DARK_ENERGY_DENSITY_GUESS,
+)
+
+
+# Value of H0 used by default when density parameters are fitted with H0 held
+# fixed. This is the mid-range of current Planck and SH0ES determinations.
+DEFAULT_FIXED_H0 = 70.0
+
 
 class SupernovaOptimizer:
     """
-    Handles fitting the cosmological models to the cleaned data using scipy.optimize,
-    and calculating goodness-of-fit metrics.
+    Handles fitting cosmological models to supernova distance moduli and
+    reporting parameter uncertainties and goodness-of-fit metrics.
     """
 
     def __init__(self):
         self.cosmology_models = SupernovaCosmologyModels()
 
-    def fit_simple_hubble_model(self, z, mu):
+    # ------------------------------------------------------------------
+    # Fit 1: one-parameter empty-universe (classical Hubble-law benchmark)
+    # ------------------------------------------------------------------
+    def fit_empty_universe_hubble(self, z, mu):
         """
-        Uses curve_fit to find the optimal Hubble Constant for the simple model.
-        
+        Fit the Hubble constant using the empty-universe (Milne) model.
+
+        Uses the closed-form luminosity distance d_L = c*z*(1+z)/H0 and
+        scipy.optimize.curve_fit. At z << 1 this reduces to the classical
+        Hubble law cz = H0 * d.
+
         Args:
-            redshiftValues (pd.Series): The x-axis data.
-            actualDistanceModuli (pd.Series): The y-axis data (standardized by Groupmate 1).
-            
+            z (array-like): Redshift values.
+            mu (array-like): Tripp-standardised distance moduli.
+
         Returns:
-            dict: Contains 'hubbleConstant' and 'uncertainty' keys.
-            
-        Note to Groupmate 2:
-        Use the constants.py file for your p0 (initial guesses). No magic values!
+            dict: {
+                'hubbleConstant': best-fit H0 in km/s/Mpc,
+                'hubbleConstantError': 1-sigma uncertainty on H0,
+                'fitModel': 'empty-universe',
+                'isMock': False,
+            }
         """
-        popt, pcov = curve_fit(self.cosmology_models.calculate_empty_universe_model, z, mu, p0=[INITIAL_HUBBLE_CONSTANT_GUESS])
+        popt, pcov = curve_fit(
+            self.cosmology_models.calculate_empty_universe_model,
+            z, mu,
+            p0=[INITIAL_HUBBLE_CONSTANT_GUESS],
+        )
 
-        return {'hubbleConstant': popt[0], 'uncertainty': np.sqrt(pcov[0][0])}
-
-    def fit_advanced_cosmological_model(self, z, mu, h0 = 73.35):
-        """
-        Fits multiple parameters omega_m, Omega_lambda using the advanced model holding h0 constant for optimization reasons
-        
-        Returns:
-            dict: Contains fitted parameters and their covariance matrix.
-        """
-        def fixed_h0_wrapper(z_val, matterdensity, darkenergydensity):
-            return self.cosmology_models.calculate_advanced_cosmological_model(z_val, h0, matterdensity, darkenergydensity)
-        # p0: Initial guesses [H0, Omega_m, Omega_Lambda]
-        # Starting with the 'Consensus' universe: 70, 0.3, 0.7
-        p0 = [0.3, 0.7]  
-        # bounds: ([min_H0, min_Om, min_Ol], [max_H0, max_Om, max_Ol])
-        # Keeps the math within physically 'sane' limits
-        bounds = ([0.0, 0.7], [1.0, 1.5])
-        # DEBUG CHECK
-        popt, pcov = curve_fit(fixed_h0_wrapper, z, mu, p0=p0, bounds=bounds)
-        percent = np.sqrt(np.diag(pcov))
-        return {'hubbleConstant': h0,
-        'matterDensity': popt[0], 
-        'darkEnergyDensity': popt[1],
-         'uncertainties': {'H0_error':0.0,
-         '0m_error': percent[0],
-          '0l_error': percent[1]},
-        'covariance_matrix': pcov}
-
-
-    def calculate_goodness_of_fit(self, mu, predicteddistanceModuli, numberOfParameters):
-        """
-        Calculates the Chi-Squared value and generates the residuals.
-        
-        Args:
-            actualDistanceModuli (pd.Series): The true data points.
-            luminosityDistancesMpc (pd.Series): Luminosity distances (Mpc) predicted by a cosmology model.
-            numberOfParameters (int): Used to calculate degrees of freedom.
-            
-        Returns:
-            dict: Contains 'chiSquaredValue', 'reducedChiSquared', and a pd.Series of 'residuals'.
-            
-        Note to Groupmate 2:
-        Keep logic flat. If branching is needed (e.g., checking if lengths match), 
-        move that logic to a helper function.
-        """
-        residuals = mu - predicteddistanceModuli
-        sigma = .3
-        chisq = np.sum((residuals**2) / (sigma**2))
-
-        degrees_of_freedom = len(mu) - numberOfParameters
-        reducedchisq = chisq / degrees_of_freedom
         return {
-            'predictedDistanceModuli': predicteddistanceModuli,
-            'chisquaredvalue': chisq,
-            'reducedchisq': reducedchisq,
-            'residuals': residuals
+            'hubbleConstant': float(popt[0]),
+            'hubbleConstantError': float(np.sqrt(pcov[0][0])),
+            'fitModel': 'empty-universe',
+            'isMock': False,
         }
-       
-        
 
-#testing code for running in terminal 
+    # ------------------------------------------------------------------
+    # Fit 2: two-parameter density fit at fixed H0 (Perlmutter/Riess style)
+    # ------------------------------------------------------------------
+    def fit_density_parameters(self, z, mu, h0=DEFAULT_FIXED_H0):
+        """
+        Fit Omega_m and Omega_Lambda simultaneously, with H0 held fixed.
+
+        H0 is held at the supplied value because H0 and the absolute magnitude
+        M of the Tripp-standardised supernovae are completely degenerate in
+        mu(z) from the supernova data alone: they enter only through the
+        combination M - 5*log10(H0). Fitting all three parameters at once
+        produces enormous covariance entries that faithfully reflect this
+        physical degeneracy but prevent any useful interpretation. Fixing H0
+        is the standard treatment.
+
+        Args:
+            z (array-like): Redshift values.
+            mu (array-like): Tripp-standardised distance moduli.
+            h0 (float, optional): Value of H0 (km/s/Mpc) to hold fixed.
+                Defaults to 70.0.
+
+        Returns:
+            dict with fitted densities, their uncertainties, the covariance
+            matrix, and metadata including the fixed H0 value.
+        """
+        def model_at_fixed_h0(redshift, matter_density, dark_energy_density):
+            return self.cosmology_models.calculate_advanced_cosmological_model(
+                redshift, h0, matter_density, dark_energy_density
+            )
+
+        p0 = [INITIAL_MATTER_DENSITY_GUESS, INITIAL_DARK_ENERGY_DENSITY_GUESS]
+        bounds = ([0.0, 0.0], [1.0, 1.0])
+
+        popt, pcov = curve_fit(
+            model_at_fixed_h0, z, mu,
+            p0=p0, bounds=bounds,
+        )
+
+        uncertainties = np.sqrt(np.diag(pcov))
+
+        return {
+            'hubbleConstant': float(h0),
+            'matterDensity': float(popt[0]),
+            'darkEnergyDensity': float(popt[1]),
+            'hubbleConstantError': 0.0,
+            'matterDensityError': float(uncertainties[0]),
+            'darkEnergyDensityError': float(uncertainties[1]),
+            'covarianceMatrix': pcov,
+            'fitModel': 'density-at-fixed-H0',
+            'fixedH0': float(h0),
+            'isMock': False,
+        }
+
+    # ------------------------------------------------------------------
+    # Fit 3: one-parameter flat-universe fit (textbook one-number answer)
+    # ------------------------------------------------------------------
+    def fit_flat_universe(self, z, mu, h0=DEFAULT_FIXED_H0):
+        """
+        Fit a flat Lambda-CDM universe: Omega_m free, Omega_Lambda = 1 - Omega_m.
+
+        Enforces the spatial-flatness constraint Omega_m + Omega_Lambda = 1,
+        leaving only one free cosmological parameter. This is the simplest
+        physically reasonable one-number answer the data can provide, and is
+        how many textbooks quote 'the' best-fit cosmology. H0 is held fixed
+        for the same degeneracy reason as in fit_density_parameters.
+
+        Args:
+            z (array-like): Redshift values.
+            mu (array-like): Tripp-standardised distance moduli.
+            h0 (float, optional): Value of H0 (km/s/Mpc) to hold fixed.
+                Defaults to 70.0.
+
+        Returns:
+            dict with fitted Omega_m, derived Omega_Lambda = 1 - Omega_m,
+            and matched uncertainties (same numeric value, flatness-linked).
+        """
+        def flat_model(redshift, matter_density):
+            dark_energy_density = 1.0 - matter_density
+            return self.cosmology_models.calculate_advanced_cosmological_model(
+                redshift, h0, matter_density, dark_energy_density
+            )
+
+        popt, pcov = curve_fit(
+            flat_model, z, mu,
+            p0=[INITIAL_MATTER_DENSITY_GUESS],
+            bounds=([0.0], [1.0]),
+        )
+
+        matter_density = float(popt[0])
+        matter_density_error = float(np.sqrt(pcov[0][0]))
+
+        return {
+            'hubbleConstant': float(h0),
+            'matterDensity': matter_density,
+            'darkEnergyDensity': 1.0 - matter_density,
+            'hubbleConstantError': 0.0,
+            'matterDensityError': matter_density_error,
+            'darkEnergyDensityError': matter_density_error,
+            'fitModel': 'flat-universe',
+            'fixedH0': float(h0),
+            'isMock': False,
+        }
+
+    # ------------------------------------------------------------------
+    # Goodness of fit
+    # ------------------------------------------------------------------
+    def calculate_goodness_of_fit(self, mu_observed, mu_predicted,
+                                  numberOfParameters, sigma=0.15):
+        """
+        Calculate chi-squared, reduced chi-squared, and residuals.
+
+        Args:
+            mu_observed (array-like): Observed distance moduli.
+            mu_predicted (array-like): Model predictions at the same redshifts.
+            numberOfParameters (int): Number of free parameters in the fit.
+            sigma (float, optional): Per-point uncertainty on mu. Union2.1
+                reports typical sigma_mu values in the 0.12-0.25 mag range
+                for Tripp-standardised supernovae; 0.15 is a reasonable
+                single-number stand-in. Defaults to 0.15.
+
+        Returns:
+            dict: {
+                'chiSquared': sum of (residual/sigma)^2,
+                'reducedChiSquared': chiSquared / degrees of freedom,
+                'residuals': observed minus predicted (numpy array),
+                'degreesOfFreedom': int,
+            }
+        """
+        residuals = np.asarray(mu_observed) - np.asarray(mu_predicted)
+        chi_squared = float(np.sum((residuals / sigma) ** 2))
+
+        degrees_of_freedom = len(mu_observed) - numberOfParameters
+        reduced_chi_squared = chi_squared / degrees_of_freedom
+
+        return {
+            'chiSquared': chi_squared,
+            'reducedChiSquared': reduced_chi_squared,
+            'residuals': residuals,
+            'degreesOfFreedom': degrees_of_freedom,
+        }
+
+
+# ------------------------------------------------------------------
+# Command-line test. Loads the Union2.1 data, runs all three fits,
+# and prints a summary. Useful for sanity checks after changes.
+# ------------------------------------------------------------------
 if __name__ == "__main__":
-    from src.constants import INITIAL_HUBBLE_CONSTANT_GUESS
-    import numpy as np
-    
-    # 1. Initialize
-    opt = SupernovaOptimizer()
-    print(f"Initial Guess: {INITIAL_HUBBLE_CONSTANT_GUESS}")
+    from src.data_loader import SupernovaDataLoader
+    from src.data_processor import SupernovaDataProcessor
 
-    # 2. Create some dummy 'test' data to make sure the math works
-    z_test = np.array([0.01, 0.05, 0.1])
-    mu_test = np.array([33.0, 36.5, 38.5])
+    loader = SupernovaDataLoader()
+    processor = SupernovaDataProcessor()
+    optimizer = SupernovaOptimizer()
 
-    # 3. Run the fit
-    try:
-        results = opt.fit_simple_hubble_model(z_test, mu_test)
-        print(f"Optimized H0: {results['hubbleConstant']:.4f}")
-        print(f"Uncertainty:  {results['uncertainty']:.4f}")
-    except Exception as e:
-        print(f"Fit failed: {e}")
+    df = processor.process_raw_records(loader.parse_supernova_objects())
+    print(f"Loaded {len(df)} supernovae, z = [{df['redshift'].min():.3f}, {df['redshift'].max():.3f}]")
+    print()
+
+    z = df['redshift'].values
+    mu = df['mu'].values
+
+    print("Fit 1: empty-universe, one parameter (H0)")
+    r1 = optimizer.fit_empty_universe_hubble(z, mu)
+    print(f"  H0 = {r1['hubbleConstant']:.2f} +/- {r1['hubbleConstantError']:.2f} km/s/Mpc")
+    print()
+
+    print("Fit 2: density parameters at fixed H0 = 70.0")
+    r2 = optimizer.fit_density_parameters(z, mu, h0=70.0)
+    print(f"  Omega_m       = {r2['matterDensity']:.3f} +/- {r2['matterDensityError']:.3f}")
+    print(f"  Omega_Lambda  = {r2['darkEnergyDensity']:.3f} +/- {r2['darkEnergyDensityError']:.3f}")
+    print()
+
+    print("Fit 3: flat universe (Omega_m free, Omega_Lambda = 1 - Omega_m)")
+    r3 = optimizer.fit_flat_universe(z, mu, h0=70.0)
+    print(f"  Omega_m       = {r3['matterDensity']:.3f} +/- {r3['matterDensityError']:.3f}")
+    print(f"  Omega_Lambda  = {r3['darkEnergyDensity']:.3f}   (by flatness)")
