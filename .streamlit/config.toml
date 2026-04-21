@@ -1,0 +1,12 @@
+[theme]
+# Deep-space observatory palette
+base            = "dark"
+primaryColor    = "#ffa62b"
+backgroundColor = "#0a1628"
+secondaryBackgroundColor = "#13233a"
+textColor       = "#e8eef5"
+font            = "serif"
+
+[server]
+headless   = true
+runOnSave  = true
