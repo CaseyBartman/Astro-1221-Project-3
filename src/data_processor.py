@@ -1,10 +1,14 @@
 import pandas as pd
 from src.constants import NUMERICAL_PHYSICS_COLUMNS
+from src.models import SupernovaCosmologyModels
 
 class SupernovaDataProcessor:
     """
     Transforms raw parsed Supernova dictionaries into a cleaned, strongly-typed Pandas DataFrame.
     """
+
+    def __init__(self):
+        self.cosmology_models = SupernovaCosmologyModels()
 
     def process_raw_records(self, raw_supernova_records):
         """Executes the data cleaning pipeline top-to-bottom."""
@@ -13,7 +17,7 @@ class SupernovaDataProcessor:
             supernova_dataframe = self._cast_numerical_columns(supernova_dataframe)
             supernova_dataframe = self._remove_invalid_measurements(supernova_dataframe)
             return self._calculate_distance_modulus(supernova_dataframe)
-            
+
         except Exception as processingError:
             # Re-raise with a clear narrative for the Streamlit UI to display
             raise RuntimeError(f"Data processing pipeline failed: {str(processingError)}") from processingError
@@ -43,11 +47,32 @@ class SupernovaDataProcessor:
             
         except KeyError as missingColumnError:
             raise KeyError(f"Cannot drop invalid rows. Missing subset column: {str(missingColumnError)}")
-    
-    def _calculate_distance_modulus(self, dataframe): 
-        """Calculates distance modulus for later use"""
-        from src.constants import ABSOLUTE_MAGNITUDE_M
 
-        dataframe['mu'] = dataframe['magnitude'] - ABSOLUTE_MAGNITUDE_M
+    def _calculate_distance_modulus(self, dataframe):
+        """
+        Apply the Tripp relation to convert raw observables into distance moduli.
+
+        The Tripp standardization uses the light-curve stretch and color
+        parameters to correct the observed peak magnitude, turning the raw
+        apparent magnitude into a true distance modulus:
+
+            mu = m_B + alpha * (stretch - 1) - beta * color - M
+
+        This is implemented inside SupernovaCosmologyModels.calculate_distance_modulus
+        rather than duplicating the formula here, so there is a single source of
+        truth for the physics.
+
+        Args:
+            dataframe (pd.DataFrame): Frame with columns 'magnitude', 'stretch',
+                                      and 'color' already cast to numeric.
+
+        Returns:
+            pd.DataFrame: The input frame with an added 'mu' column.
+        """
+        dataframe = dataframe.copy()
+        dataframe['mu'] = self.cosmology_models.calculate_distance_modulus(
+            dataframe['magnitude'],
+            dataframe['stretch'],
+            dataframe['color'],
+        )
         return dataframe
-
