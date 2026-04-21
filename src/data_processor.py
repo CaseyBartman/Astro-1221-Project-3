@@ -11,8 +11,8 @@ class SupernovaDataProcessor:
         try:
             supernova_dataframe = self._convert_to_dataframe(raw_supernova_records)
             supernova_dataframe = self._cast_numerical_columns(supernova_dataframe)
-            
-            return self._remove_invalid_measurements(supernova_dataframe)
+            supernova_dataframe = self._remove_invalid_measurements(supernova_dataframe)
+            return self._calculate_distance_modulus(supernova_dataframe)
             
         except Exception as processingError:
             # Re-raise with a clear narrative for the Streamlit UI to display
@@ -43,3 +43,11 @@ class SupernovaDataProcessor:
             
         except KeyError as missingColumnError:
             raise KeyError(f"Cannot drop invalid rows. Missing subset column: {str(missingColumnError)}")
+    
+    def _calculate_distance_modulus(self, dataframe): 
+        """Calculates distance modulus for later use"""
+        from src.constants import ABSOLUTE_MAGNITUDE_M
+
+        dataframe['mu'] = dataframe['magnitude'] - ABSOLUTE_MAGNITUDE_M
+        return dataframe
+
