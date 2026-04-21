@@ -20,10 +20,10 @@ from src.app_utils import (
     get_supernova_dataframe,
     get_standardised_distance_moduli,
     configure_plot_style,
-    COLOUR_DATA,
-    COLOUR_FIT,
-    COLOUR_EMPTY,
-    COLOUR_MATTER,
+    Color_DATA,
+    Color_FIT,
+    Color_EMPTY,
+    Color_MATTER,
 )
 from src.models import SupernovaCosmologyModels
 
@@ -34,13 +34,44 @@ configure_plot_style()
 
 st.title("Model Comparison")
 st.markdown(
-    "Three very different universes, one dataset. Each curve is what that "
+    "Three very different universes. Each curve is what that "
     "universe predicts for the distance modulus of a Type Ia supernova at "
     "redshift ``z``, assuming the same Hubble constant H\u2080 = 70 km/s/Mpc."
 )
 st.markdown("---")
 
-
+# -- Explanation of what this page is for -------------------------------
+with st.expander("What is this page trying to show?", expanded=True):
+    st.markdown(
+        """
+        The Hubble Diagram page shows a single best-fit curve drawn on
+        the data. That's useful, but it hides how
+        strongly the data *rules out* other possibilities.
+ 
+        This page draws three completely different universes on top of
+        the same data points.
+ 
+        - **Empty universe (Milne)** -- assumes the universe contains
+          no matter and no dark energy, just pure expansion. A useful
+          blank hypothesis: if the data sit on this curve, the universe
+          has nothing in it. If they sit above or below, the universe
+          has *something*. And we know the universe has something, so we assume
+          the data will not sit on the curve.
+        - **Matter-only (Einstein-de Sitter)** -- assumes the universe
+          is full of ordinary matter (``Omega_m = 1``) and has no dark
+          energy. This is what physicists expected before 1998. Gravity
+          should slow the expansion down over time.
+        - **Lambda-CDM consensus** -- assumes the universe is ~30%
+          matter and ~70% dark energy, which is what fits the data.
+          Dark energy makes the expansion *speed up* over time.
+ 
+        The lower panel of the figure below removes the Lambda-CDM
+        curve and plots everything as the difference from it. That is
+        where the matter-only curve's disagreement with the data
+        becomes unmistakable.
+        """
+    )
+ 
 # -- Shared constants ---------------------------------------------------
 H0_SHARED = 70.0
 models = SupernovaCosmologyModels()
@@ -94,25 +125,25 @@ fig, (ax_main, ax_res) = plt.subplots(
 # Upper panel: data + three curves
 ax_main.scatter(
     z_data, mu_data,
-    color=COLOUR_DATA, s=12, alpha=0.55, edgecolor="none",
+    color=Color_DATA, s=12, alpha=0.55, edgecolor="none",
     label=f"JLA data (n = {len(dataframe)})",
     zorder=1,
 )
 ax_main.plot(
     z_curve, mu_empty,
-    color=COLOUR_EMPTY, linewidth=2.0, linestyle="--",
+    color=Color_EMPTY, linewidth=2.0, linestyle="--",
     label="Empty (Milne):   $\\Omega_m=0,\\; \\Omega_\\Lambda=0$",
     zorder=3,
 )
 ax_main.plot(
     z_curve, mu_matter,
-    color=COLOUR_MATTER, linewidth=2.0, linestyle="-.",
+    color=Color_MATTER, linewidth=2.0, linestyle="-.",
     label="Matter-only (EdS): $\\Omega_m=1,\\; \\Omega_\\Lambda=0$",
     zorder=3,
 )
 ax_main.plot(
     z_curve, mu_lcdm,
-    color=COLOUR_FIT, linewidth=2.4,
+    color=Color_FIT, linewidth=2.4,
     label="Consensus ($\\Lambda$CDM): $\\Omega_m=0.3,\\; \\Omega_\\Lambda=0.7$",
     zorder=4,
 )
@@ -124,19 +155,19 @@ ax_main.legend(loc="lower right", fontsize=9)
 # Lower panel: residuals relative to the Lambda-CDM consensus
 ax_res.scatter(
     z_data, residuals_data,
-    color=COLOUR_DATA, s=10, alpha=0.55, edgecolor="none",
+    color=Color_DATA, s=10, alpha=0.55, edgecolor="none",
     zorder=1,
 )
-ax_res.axhline(0.0, color=COLOUR_FIT, linewidth=1.8, linestyle="-",
+ax_res.axhline(0.0, color=Color_FIT, linewidth=1.8, linestyle="-",
                label="$\\Lambda$CDM reference")
 ax_res.plot(
     z_curve, residuals_empty,
-    color=COLOUR_EMPTY, linewidth=1.8, linestyle="--",
+    color=Color_EMPTY, linewidth=1.8, linestyle="--",
     label="Empty - $\\Lambda$CDM",
 )
 ax_res.plot(
     z_curve, residuals_matter,
-    color=COLOUR_MATTER, linewidth=1.8, linestyle="-.",
+    color=Color_MATTER, linewidth=1.8, linestyle="-.",
     label="Matter-only - $\\Lambda$CDM",
 )
 ax_res.set_xscale("log")
@@ -152,23 +183,27 @@ st.markdown(
     """
     #### What this figure shows
 
-    All three curves converge at low redshift -- at ``z < 0.05`` you cannot
-    distinguish the cosmologies, because the differences are set by how much
-    expansion has happened while the photons were in flight, and not much
-    has happened yet. The models diverge rapidly at ``z > 0.3``.
-
-    The lower panel removes the Lambda-CDM consensus and plots everything
-    relative to it. The data scatter around zero, as they should if
+    All three curves converge at low redshift. At ``z < 0.05`` the
+    three universes are indistinguishable from each other, because
+    light from those supernovae hasn't had time to record any
+    meaningful expansion history. The curves only diverge where the
+    universe is old enough for its contents to matter -- roughly at
+    ``z > 0.3``.
+ 
+    The lower panel removes the Lambda-CDM curve and plots everything
+    relative to it. The data scatter around zero, which means
     Lambda-CDM is a good description. The matter-only curve drops
-    systematically below zero at high redshift -- equivalently, a
-    matter-only universe predicts supernovae at ``z > 0.5`` should be
-    **brighter** than we observe. They are not: they are **fainter**, which
-    is exactly what dark energy does to distant objects. This is the 1998
-    discovery in one panel.
-
-    The empty Milne universe sits between the two. It is a useful null
-    hypothesis -- a universe with expansion but no matter and no dark energy.
-    Any departure of the data from the Milne curve is evidence that the
-    universe has *something* in it, gravitationally.
+    systematically below zero at high redshift, which means a
+    matter-only universe would predict supernovae at ``z > 0.5`` to be
+    **brighter** than we observe. They are not. They are **fainter**,
+    which is exactly what a dark-energy-dominated expansion does to
+    distant objects. This is the 1998 discovery in one panel.
+ 
+    The empty Milne universe sits between the two. It's not a viable
+    universe but it's a useful reference. Any departure of the data from the Milne curve
+    is evidence that the universe contains matter and/or dark energy
+    that is gravitationally active.
     """
 )
+
+##AI assisted Scientific explanation

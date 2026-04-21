@@ -7,10 +7,10 @@ drags, the predicted Hubble curve updates in real time over the JLA
 data. Displays the present-day deceleration parameter ``q_0`` so the user
 can see directly when the universe they have built is accelerating.
 
-This page is the pedagogical heart of the application: by manipulating the
-cosmological parameters and watching the curve bend, a viewer can develop
-direct intuition for why the 1998 supernova data ruled out a matter-only
+By moving the parameters and watching the curve bend, a viewer can develop direct
+intuition for why the 1998 supernova data ruled out a matter-only
 universe.
+
 """
 
 import matplotlib.pyplot as plt
@@ -23,9 +23,9 @@ from src.app_utils import (
     configure_plot_style,
     format_cosmology_string,
     compute_deceleration_parameter,
-    COLOUR_DATA,
-    COLOUR_FIT,
-    COLOUR_EMPTY,
+    Color_DATA,
+    Color_FIT,
+    Color_EMPTY,
 )
 from src.models import SupernovaCosmologyModels
 
@@ -36,15 +36,27 @@ configure_plot_style()
 
 st.title("Interactive Cosmology")
 st.markdown(
-    "Drag the sliders to build your own universe. The amber curve shows "
-    "what that universe predicts for the distance modulus as a function of "
-    "redshift; the teal points are the real JLA measurements. For "
-    "comparison, the violet dashed curve is the empty (Milne) universe, "
-    "which is the natural null hypothesis."
+    "Set the three numbers that define the universe to anything."
+    "The Hubble constant is the expansion rate today, Omega m is the matter content"
+    "and Omega Lambda is the dark-energy content. The teal points are the measured supernovae"
+    "and the yellow curve is the universe that was determined by the sliders"
 )
 st.markdown("---")
 
-
+# -- Quick explainer ----------------------------------------------------
+with st.expander("What does 'interactive' mean on this page?", expanded=False):
+    st.markdown(
+        """
+        On the Hubble Diagram and Model Comparison pages, the curves
+        are locked to specific combinations of parameters. On this
+        page you control them directly. 
+ 
+        A few things to try are listed below in the
+        "Suggested experiments" section, each one shows a specific
+        thing you can see with the sliders.
+        """
+    )
+ 
 # -- Sliders ------------------------------------------------------------
 slider_col, info_col = st.columns([2, 1], gap="large")
 
@@ -98,9 +110,9 @@ with info_col:
         delta="accelerating" if q0 < 0 else "decelerating",
         delta_color=("inverse" if q0 < 0 else "normal"),
         help=(
-            "q\u2080 = \u03A9\u2098/2 - \u03A9\u039B, from Ryden & Peterson "
-            "eq. 24.37, neglecting radiation. Negative means the expansion "
-            "is accelerating -- the 1998 discovery."
+            "q\u2080 = \u03A9\u2098/2 - \u03A9\u039B, from Ryden & "
+            "Peterson eq. 24.37, neglecting radiation. Negative means "
+            "the expansion is accelerating -- the 1998 discovery."
         ),
     )
 
@@ -146,18 +158,18 @@ fig, ax = plt.subplots(figsize=(11, 6))
 
 ax.scatter(
     z_data, mu_data,
-    color=COLOUR_DATA, s=12, alpha=0.55, edgecolor="none",
+    color=Color_DATA, s=12, alpha=0.55, edgecolor="none",
     label=f"JLA data (n = {len(dataframe)})",
     zorder=1,
 )
 ax.plot(
     z_curve, mu_milne,
-    color=COLOUR_EMPTY, linewidth=1.6, linestyle="--",
+    color=Color_EMPTY, linewidth=1.6, linestyle="--",
     label="Empty universe (Milne)", zorder=2,
 )
 ax.plot(
     z_curve, mu_your_universe,
-    color=COLOUR_FIT, linewidth=2.4,
+    color=Color_FIT, linewidth=2.4,
     label="Your universe", zorder=3,
 )
 ax.set_xscale("log")
@@ -171,22 +183,97 @@ ax.legend(loc="lower right")
 st.pyplot(fig, clear_figure=True)
 
 
-# -- Suggested experiments ----------------------------------------------
+# -- Structured experiments --------------------------------------------
+st.markdown("### Suggested experiments")
 st.markdown(
-    """
-    #### Suggested experiments
-
-    - **Turn dark energy off.** Set ``Omega_Lambda = 0`` and ``Omega_m = 1``
-      (matter-only, Einstein-de Sitter). The curve should fall below the
-      data at high redshift -- the distant supernovae are fainter than a
-      matter-only universe predicts. This was the 1998 discovery.
-    - **Turn dark energy on.** Set ``Omega_Lambda = 0.7`` and
-      ``Omega_m = 0.3``. The curve now sits neatly on top of the data.
-    - **Dial up the Hubble constant.** Push H\u2080 from 67 to 73 and
-      watch the curve drop uniformly. This is the Hubble tension: both
-      values are within the data's scatter, but they disagree more sharply
-      than either measurement's quoted uncertainty permits.
-    - **Build an empty universe.** Set both densities to zero. The solid
-      amber curve collapses onto the violet Milne reference.
-    """
+    "Each block below asks you to try a specific parameter combination "
+    "and tells you what to look for. Move the sliders above to match, "
+    "then read the expected outcome."
 )
+ 
+with st.expander(
+    "Experiment 1 -- Turn dark energy OFF (reproduce pre-1998 expectations)",
+    expanded=False,
+):
+    st.markdown(
+        """
+        **Set:** ``Omega_m = 1.00``,  ``Omega_Lambda = 0.00``,
+        ``H_0 = 70``
+ 
+        **Watch:** the amber curve will drop noticeably below the data
+        points at high redshift (``z > 0.3``).
+ 
+        **Why this matters:** this is the "matter-only" or
+        Einstein-de Sitter universe, what cosmologists thought the
+        universe was like before 1998. The curve fails to reach the
+        observed supernovae, meaning a matter-only universe predicts
+        those supernovae should look **brighter** than they actually
+        do. That disagreement, repeated across dozens of supernovae at
+        the time, is what forced the Nobel-prize-winning conclusion
+        that dark energy must be real.
+ 
+        **Check your q0:** should be ``+0.50`` (decelerating).
+        """
+    )
+ 
+with st.expander(
+    "Experiment 2 -- Turn dark energy ON (the universe as we think it now)",
+    expanded=False,
+):
+    st.markdown(
+        """
+        **Set:** ``Omega_m = 0.30``,  ``Omega_Lambda = 0.70``,
+        ``H_0 = 70``
+ 
+        **Watch:** the curve lands cleanly on top of the data.
+ 
+        **Why this matters:** these are the Lambda-CDM consensus
+        values. Together they predict that the universe contains 30%
+        matter and 70% dark energy. The close agreement between
+        curve and data is the reason this combination is called the
+        "standard model of cosmology."
+ 
+        **Check your q0:** should be ``-0.55`` (accelerating).
+        """
+    )
+ 
+with st.expander(
+    "Experiment 3 -- The Hubble tension",
+    expanded=False,
+):
+    st.markdown(
+        """
+        **Keep densities at consensus** (``Omega_m = 0.30``,
+        ``Omega_Lambda = 0.70``) **and drag H_0 slowly from 67 to 73.**
+ 
+        **Watch:** the curve shifts vertically -- it does not change
+        shape, it just moves up or down.
+ 
+        **Why this matters:** both 67 (Planck) and 73 (SH0ES) are
+        within the scatter of the data, but their quoted uncertainties
+        don't overlap. The shape of the curve doesn't tell you which H_0 is right.
+        """
+    )
+ 
+with st.expander(
+    "Experiment 4 -- An empty universe",
+    expanded=False,
+):
+    st.markdown(
+        """
+        **Set:** ``Omega_m = 0.00``,  ``Omega_Lambda = 0.00``
+ 
+        **Watch:** the yellow curve collapses onto the blue
+        dashed Milne reference curve.
+ 
+        **Why this matters:** with no matter and no dark energy, the
+        universe just expands at a steady rate (the Milne model). The
+        data sit slightly above this curve at high redshift, telling
+        you the universe contains *something* -- it isn't empty. The
+        other experiments show *what* it contains.
+ 
+        **Check your q0:** should be ``0.000`` (neither accelerating
+        nor decelerating).
+        """
+    )
+ 

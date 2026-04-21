@@ -2,17 +2,12 @@
 Methodology page
 ================
 
-Written audit of the physics and computational methodology used in this
-project. Functions both as a reference for reading the code and as the
-astronomical verification record required by the project rubric.
-
-This page is mostly markdown by design; it is the place where the written
-documentation word-count for the project is concentrated.
-"""
+Written record of the physics and computational methodology used in
+this project. Functions as the astronomical verification record."""
 
 import streamlit as st
 
-from src.app_utils import configure_plot_style, COLOUR_FIT
+from src.app_utils import configure_plot_style, Color_FIT
 
 
 st.set_page_config(page_title="Methodology", layout="wide")
@@ -32,29 +27,27 @@ st.markdown("---")
 # -- Dataset -----------------------------------------------------------
 st.header("1. Dataset")
 st.markdown(
-    """
+     """
     This project uses the **JLA compilation** of Type Ia supernovae
-    published by Betoule et al. 2014 (A&A 568, A22). JLA is a unified
-    re-analysis of 580 Type Ia supernovae drawn from 19 separate survey
-    datasets, all passed through the same SALT2 light-curve fitter so
-    their stretch and colour parameters are on a common scale. The
-    compilation extends from local supernovae at ``z = 0.015`` through
-    Hubble Space Telescope discoveries at ``z > 1``, which is precisely
-    the redshift range needed to detect the signature of cosmic
-    acceleration.
-
-    The dataset is distributed by the Supernova Cosmology Project at
-    Lawrence Berkeley Lab. For this project, a JSON-formatted subset
-    hosted by the Wolfram Data Repository was used for ease of parsing.
-    The raw records contain four physical columns for each supernova:
-
+    published by Betoule et al. 2014 (A&A 568, A22). (the Joint
+    Light-curve Analysis) JLA succeeds the older Union2.1 compilation (Suzuki et al. 2012)
+    as the preferred standard for supernova cosmology analyses, and our
+    pipeline retrieves it from the Wolfram Data Repository (Bradley
+    2022). The compilation extends from local supernovae at
+    ``z = 0.01`` through HST discoveries near ``z = 1.3``, which is
+    precisely the redshift range needed to detect the signature of
+    cosmic acceleration.
+ 
+    After cleaning, 732 supernovae remain in the sample. The raw records
+    contain four physical columns for each supernova:
+ 
     - ``redshift`` -- heliocentric redshift z.
     - ``magnitude`` -- peak apparent brightness in the B band, ``m_B``.
     - ``stretch`` -- the SALT2 light-curve stretch parameter s, measuring
       how slowly the supernova fades after peak. Values are centred
       near one.
-    - ``color`` -- the SALT2 colour parameter c, approximately the
-      dereddened (B - V) colour at peak. Centred near zero.
+    - ``color`` -- the SALT2 Color parameter c, approximately the
+      dereddened (B - V) Color at peak. Centred near zero.
     """
 )
 
@@ -63,12 +56,12 @@ st.markdown(
 st.header("2. Standardising the supernovae: the Tripp relation")
 st.markdown(
     """
-    Type Ia supernovae are near-standard candles: their intrinsic peak
+    Type Ia supernovae are near-standard candles, so their intrinsic peak
     luminosities are similar but not identical. The empirical correlations
     that tighten them into usable standard candles were first formalised
     by Tripp (1998, A&A 331, 815), who showed that supernovae with
     broader light curves (higher stretch) are intrinsically more luminous,
-    and supernovae that are redder at peak (higher colour c) are
+    and supernovae that are redder at peak (higher Color c) are
     intrinsically fainter. Correcting for these two trends reduces the
     scatter in peak luminosity from around 0.3 mag to roughly 0.12 mag.
 
@@ -86,7 +79,7 @@ st.markdown(
     ``M = -19.3`` mag. The sign convention follows Tripp (1998) and
     Mandel et al. (2017, ApJ 842, 93).
 
-    **Audit note.** The original implementation used ``alpha * s`` rather
+    **note.** The original implementation used ``alpha * s`` rather
     than ``alpha * (s - 1)``. Because the JLA stretch values are
     centred near one rather than zero, this introduced a constant offset
     of ``alpha * 1 = 0.14`` mag which would have been absorbed into an
@@ -130,7 +123,7 @@ st.markdown(
     This is what ``SupernovaCosmologyModels.calculate_advanced_cosmological_model``
     computes. The integral is evaluated numerically with ``scipy.integrate.quad``.
 
-    **Approximations.** Radiation density ``Omega_r`` is neglected. It
+    **Approximations.** We could take a couple shortcuts. Radiation density ``Omega_r`` is neglected. It
     contributes at the ``10^-5`` level to the total energy budget today
     and never reaches 1% importance below ``z ~ 3400``, far above any
     redshift in the supernova sample. Spatial curvature ``Omega_k`` is
@@ -157,7 +150,7 @@ st.markdown(
     (Ryden & Peterson eq. 20.30). This is what the
     ``calculate_empty_universe_model`` method returns.
 
-    **Audit note.** The original implementation of this method omitted
+    **note.** The original implementation of this method did not use
     the ``(1 + z)`` factor entirely, using only ``d_L = c z / H_0``. The
     missing factor is small at ``z < 0.05`` but reaches
     ``5 log(1.5) ~ 0.88`` mag at ``z = 0.5``. This is larger than the
@@ -177,20 +170,38 @@ st.markdown(
     is to find the cosmological parameters ``(H_0, Omega_m, Omega_Lambda)``
     that best reproduce the observed ``(z_i, mu_i)`` points from the
     JLA compilation. This is a standard non-linear least-squares
-    problem, which in this project is solved using ``scipy.optimize.curve_fit``
-    -- the same tool introduced in the course for curve fitting. The
+    problem, which in this project is solved using ``scipy.optimize.curve_fit``. The
     optimiser returns the best-fit parameters and their covariance
-    matrix; parameter uncertainties are the square roots of the diagonal
+    matrix, parameter uncertainties are the square roots of the diagonal
     covariance entries.
 
-    Goodness-of-fit is characterised by reduced chi-squared: the sum of
-    squared residuals weighted by the per-point uncertainty, divided by
-    the number of degrees of freedom. JLA reports a per-supernova
-    distance-modulus uncertainty sigma_mu for each entry; incorporating
-    these weights is a planned enhancement to the data pipeline.
+     **Three fit strategies.** ``src/optimizer.py`` provides three
+    complementary fits:
+ 
+    - ``fit_empty_universe_hubble`` -- one free parameter (``H_0``)
+      using the closed-form empty-universe model. The classical
+      benchmark.
+    - ``fit_density_parameters`` -- two free parameters
+      (``Omega_m``, ``Omega_Lambda``) with ``H_0`` held fixed. This
+      matches the standard Perlmutter/Riess 1998 analyses, for a
+      specific physical reason: ``H_0`` and the absolute magnitude
+      ``M`` of the standardised supernovae enter the predicted
+      ``mu(z)`` only through the combination ``M - 5*log10(H_0)``.
+      They are perfectly degenerate in a supernova-only fit.
+      Attempting to fit both at once produces a near-singular
+      covariance matrix and uncertainty estimates that blow up.
+      Fixing ``H_0`` is the principled solution.
+    - ``fit_flat_universe`` -- one free parameter (``Omega_m``)
+      with flatness enforced (``Omega_Lambda = 1 - Omega_m``). The
+      tightest one-number answer the data can give.
 
-    This section will expand with fit-specific details once the
-    ``SupernovaOptimizer`` module is finalised.
+    Whether it was a good fit is characterised by reduced chi-squared: the sum of
+    squared residuals weighted by the per-point uncertainty, divided by
+    the number of degrees of freedom. JLA
+    reports per-supernova distance-modulus uncertainties in the
+    0.12-0.25 mag range; a single-number stand-in of ``sigma_mu =
+    0.15`` mag is used here. Incorporating the per-point
+    uncertainties is a future enhancement.
     """
 )
 
@@ -199,7 +210,7 @@ st.markdown(
 st.header("5. References")
 st.markdown(
     f"""
-    <div style='border-left:4px solid {COLOUR_FIT}; padding-left:1rem;'>
+    <div style='border-left:4px solid {Color_FIT}; padding-left:1rem;'>
     <p>
     <strong>Ryden, B. &amp; Peterson, B. M.</strong> (2010).
     <em>Foundations of Astrophysics</em>. Pearson.
@@ -215,13 +226,26 @@ st.markdown(
     </p>
     <p>
     <strong>Mandel, K. S., Scolnic, D. M., Shariff, H., Foley, R. J., &amp;
-    Kirshner, R. P.</strong> (2017). "The Type Ia supernova color-magnitude
-    relation and host galaxy dust: a simple hierarchical Bayesian model,"
+    Kirshner, R. P.</strong> (2017). "The Type Ia supernova
+    color-magnitude relation and host galaxy dust: a simple
+    hierarchical Bayesian model,"
     <em>The Astrophysical Journal</em>, 842, 93.
     </p>
     <p>
-    <strong>Betoule et al.</strong> (2014). ADD THE REST OF REF
-    <em>The Astrophysical Journal</em>, 746, 85. arXiv:1401.4064.
+    <strong>Betoule, M., et al.</strong> (2014). "Improved
+    cosmological constraints from a joint analysis of the SDSS-II and
+    SNLS supernova samples,"
+    <em>Astronomy &amp; Astrophysics</em>, 568, A22. arXiv:1401.4064.
+    </p>
+    <p>
+    <strong>Bradley, M.</strong> (2022). "Type Ia Supernova Data,"
+    <em>Wolfram Data Repository</em>.
+    https://datarepository.wolframcloud.com/resources/Type-Ia-Supernova-Data/
+    </p>
+    <p>
+    <strong>The Royal Swedish Academy of Sciences</strong> (2011).
+    "The 2011 Nobel Prize in Physics -- press release."
+    https://www.nobelprize.org/prizes/physics/2011/press-release/
     </p>
     </div>
     """,

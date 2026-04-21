@@ -25,16 +25,16 @@ from src.models import SupernovaCosmologyModels
 from src.constants import SUPERNOVA_KEYS, JSON_FILENAME
 
 
-# -- Colour palette (matches .streamlit/config.toml) ----------------------
-COLOUR_BACKGROUND = "#0a1628"
-COLOUR_PANEL      = "#13233a"
-COLOUR_TEXT       = "#e8eef5"
-COLOUR_MUTED      = "#7a8ba3"
-COLOUR_DATA       = "#4ecdc4"   # teal -- observed supernovae
-COLOUR_FIT        = "#ffa62b"   # amber -- best-fit 
-COLOUR_EMPTY      = "#a17cd9"   # violet -- empty universe
-COLOUR_MATTER     = "#e65a7a"   # rose   -- matter-only (Einstein-de Sitter)
-COLOUR_GRID       = "#1f3350"
+# -- Color palette (matches .streamlit/config.toml) ----------------------
+Color_BACKGROUND = "#0a1628"
+Color_PANEL      = "#13233a"
+Color_TEXT       = "#e8eef5"
+Color_MUTED      = "#7a8ba3"
+Color_DATA       = "#4ecdc4"   # teal -- observed supernovae
+Color_FIT        = "#ffa62b"   # amber -- best-fit 
+Color_EMPTY      = "#a17cd9"   # violet -- empty universe
+Color_MATTER     = "#e65a7a"   # rose   -- matter-only (Einstein-de Sitter)
+Color_GRID       = "#1f3350"
 
 
 @st.cache_data(show_spinner="Fetching the JLA supernova compilation...")
@@ -104,21 +104,21 @@ def configure_plot_style():
     Should be called once at the top of each page, after ``st.set_page_config``.
     """
     plt.rcParams.update({
-        "figure.facecolor":  COLOUR_BACKGROUND,
-        "axes.facecolor":    COLOUR_PANEL,
-        "axes.edgecolor":    COLOUR_MUTED,
-        "axes.labelcolor":   COLOUR_TEXT,
-        "axes.titlecolor":   COLOUR_TEXT,
+        "figure.facecolor":  Color_BACKGROUND,
+        "axes.facecolor":    Color_PANEL,
+        "axes.edgecolor":    Color_MUTED,
+        "axes.labelcolor":   Color_TEXT,
+        "axes.titlecolor":   Color_TEXT,
         "axes.grid":         True,
-        "grid.color":        COLOUR_GRID,
+        "grid.color":        Color_GRID,
         "grid.linestyle":    ":",
         "grid.alpha":        0.6,
-        "xtick.color":       COLOUR_MUTED,
-        "ytick.color":       COLOUR_MUTED,
-        "text.color":        COLOUR_TEXT,
-        "legend.facecolor":  COLOUR_PANEL,
-        "legend.edgecolor":  COLOUR_MUTED,
-        "legend.labelcolor": COLOUR_TEXT,
+        "xtick.color":       Color_MUTED,
+        "ytick.color":       Color_MUTED,
+        "text.color":        Color_TEXT,
+        "legend.facecolor":  Color_PANEL,
+        "legend.edgecolor":  Color_MUTED,
+        "legend.labelcolor": Color_TEXT,
         "font.family":       "serif",
         "font.size":         11,
         "axes.titlesize":    13,

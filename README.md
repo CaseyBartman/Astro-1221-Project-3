@@ -1,11 +1,12 @@
 # Astro-1221-Project-3
 
 ### Command to install packages: 
-**$ pip install streamlit, pandas, scipy**
+**$ pip install -r requirements.txt**
 
 ### App instructions:
 To run the app:
 **$ streamlit run app.py**
+may need to copy and past the local URL from terminal if it does not pop up automatically
 
 # Project Goal:
 To fit the relationship between supernova distance, redshift, and measure the universe's expansion. We load MANY supernovae with measured values and implement the Hubble law model, fitting appropriately with the Hubble constants and plotting everything via streamlit. 
@@ -34,10 +35,13 @@ This is the standard cosmography integral used to calculate lumninosity distance
 This is the compilation set that we used to grab the supernova data. We retreived the data from the Wolfram Data
 Repository. This repository hosts JLA, we initially looked at data from Union2.1 but determined that it would be better to work with about 150 more supernovae. The larger sample size produces better science results. Using the 580 in Union2.1 would make our error bars bigger simply to match a specific historical complilation. Both complilations are essentially the same, but a larger set would produce better results for us to prove the findings of the Nobel Prize winners.
 
-1) Fix citation for JLA Detoule et al. 2014 arXiv:1401.4064
+1) Betoule, M., et al. (2014). "Improved cosmological constraints from a joint analysis of the SDSS-II and SNLS supernova samples," Astronomy & Astrophysics, 568, A22. arXiv:1401.4064. https://arxiv.org/abs/1401.4064
 
-2) The orginal source of Union links to: https://supernova.lbl.gov/Union/ We used a subset compilation formatted for easier parsing here: https://datarepository.wolframcloud.com/resources/Type-Ia-Supernova-Data/
+2) Bradley, M. (2022). "Type Ia Supernova Data." Wolfram Data Repository. https://datarepository.wolframcloud.com/resources/Type-Ia-Supernova-Data/
 
+### Background Research
+
+1) The Royal Swedish Academy of Sciences (2011). "The 2011 Nobel Prize in Physics — press release." https://www.nobelprize.org/prizes/physics/2011/press-release/
 
 ## AI Usage in Project:
 - Casey: 
