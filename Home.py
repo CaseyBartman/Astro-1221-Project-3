@@ -6,10 +6,10 @@ Type Ia Supernova Hubble Diagram -- Streamlit Application
 Main entry point and home page for the app!
 Run from the project with::
 
-    streamlit run app.py
+    streamlit run Home.py
 
 Project structure:
-    app.py                         
+    Home.py                         
     pages/                         
       1_Data_Explorer.py         
       2_Hubble_Diagram.py          
