@@ -262,3 +262,22 @@ if __name__ == "__main__":
     r3 = optimizer.fit_density_parameters(z, mu, h0=70.0)
     print(f"  Omega_m = {r3['matterDensity']:.3f} +/- {r3['matterDensityError']:.3f}")
     print(f"  Omega_L = {r3['darkEnergyDensity']:.3f} +/- {r3['darkEnergyDensityError']:.3f}")
+
+# -----Small description for Wednesday
+# The optimizer fits three different possible universes. There is code for an empty-universe fit, a matter-only fit, and 
+# a fit that includes dark energy. All three models use scipy.optimize.curve_fit. The empty universe is the simplest 
+# possible fit, assuming there is no matter and no dark energy. The model function it fits against is the 
+# calcultae_empty_universe_model form Casey’s models section. The function can then calculate the distance modulus. Our 
+# only matter fit represents the pre-1998 view of the universe. We wanted to hold some parameters fixed and only fit the 
+# others. Originally, forcing three free parameters made it kind of blow up. For this fit, omega m is not actually 1; it's 
+# about 0.73. The optimizer is trying to compensate for a missing component by lowering omega m. But no matter the omega m 
+# for this fit, the chi-squared is still worse than our last fit. Our final fit is for matter and dark energy, which is the 
+# analysis of researchers in 1998. We again fixed parameters in this fit, but it was only our Hubble constant. Leaving our 
+# matter and dark energy parameters open. Keeping H fixed is a big part of the physics. For the distance modulus, H and 
+# absolute magnitude are combined through that process. They become essentially algorithmically inseparable. If we try to 
+# fit all three parameters, it completely screws up the covariance matrix, and everything falls apart. In more technical 
+# terms, I'm not sure why this is happening past that. Finally, we want to compute the chi-squared and reduced chi-squared 
+# to determine which model fits best. Each term is the squared measurement of sigma. It’s the data minus the model. A good 
+# fit would have a reduced chi-squared of 1. (degrees of freedom is the # of data points - number of free parameters). We 
+# assume the uncertainty / sigma for our modeling is about 0.15, since the JLA reports uncertainties from about 0.12-0.25.
+#  In the future, we could load and use the per-point values instead of a broad value. 
