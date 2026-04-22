@@ -24,7 +24,7 @@ configure_plot_style()
 
 st.title("Data Explorer")
 st.markdown(
-    "Look at the JLA Type 1a supernovae complilation, each row is one"
+    "Look at the JLA Type Ia supernovae complilation, each row is one"
     "supernova. Expand the glossary below to understand the column names and their physical measurements"
 )
 st.markdown("---")
@@ -66,9 +66,9 @@ with st.expander ("What do the columns actually mean?", expanded=False):
  
         **color (c)** -- the color index measures the temp and evolution of an explosion
         by using B-V. This is the difference between the Blue and Green visible wavelengths. 
-        Type 1a specifically have a c around 0 to -0.25, with brighter supernovae being a bit bluer.
+        Type Ia specifically have a c around 0 to -0.25, with brighter supernovae being a bit bluer.
         A smaller number would mean a hotter, bluer object. In JLA, these values are centered around 0.
-        Just adding on a little more, if c=0 then the supernova has the Type 1a typical color at peak,
+        Just adding on a little more, if c=0 then the supernova has the Type Ia typical color at peak,
         if c is negative then its a little bluer than typical and if positive the color is a little redder than typical.
  
         **mu (distance modulus)** -- this is the calculated distance
