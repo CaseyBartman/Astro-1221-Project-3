@@ -13,8 +13,8 @@ from src.app_utils import (
     get_supernova_dataframe,
     get_standardised_distance_moduli,
     configure_plot_style,
-    Color_DATA,
-    Color_FIT,
+    COLOR_DATA,
+    COLOR_FIT,
 )
 
 
@@ -174,7 +174,7 @@ if len(filtered) > 0:
     # Redshift distribution
     axes[0, 0].hist(
         filtered["redshift"], bins=40,
-        color=Color_DATA, edgecolor="black", alpha=0.85,
+        color=COLOR_DATA, edgecolor="black", alpha=0.85,
     )
     axes[0, 0].set_xlabel("Redshift z")
     axes[0, 0].set_ylabel("Count")
@@ -183,7 +183,7 @@ if len(filtered) > 0:
     # Apparent magnitude distribution
     axes[0, 1].hist(
         filtered["magnitude"], bins=40,
-        color=Color_FIT, edgecolor="black", alpha=0.85,
+        color=COLOR_FIT, edgecolor="black", alpha=0.85,
     )
     axes[0, 1].set_xlabel("Apparent B magnitude m$_B$")
     axes[0, 1].set_ylabel("Count")
@@ -201,7 +201,7 @@ if len(filtered) > 0:
     # mu vs z -- preview of the Hubble diagram
     axes[1, 1].scatter(
         filtered["redshift"], filtered["mu"],
-        color=Color_DATA, s=12, alpha=0.75, edgecolor="none",
+        color=COLOR_DATA, s=12, alpha=0.75, edgecolor="none",
     )
     axes[1, 1].set_xscale("log")
     axes[1, 1].set_xlabel("Redshift z (log scale)")

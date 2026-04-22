@@ -19,9 +19,11 @@ from src.app_utils import (
     get_standardised_distance_moduli,
     configure_plot_style,
     format_cosmology_string,
-    Color_DATA,
-    Color_FIT,
-    Color_MUTED,
+    COLOR_DATA,
+    COLOR_FIT,
+    COLOR_MUTED,
+    COLOR_EMPTY, 
+    COLOR_MATTER,
 )
 
 from src.models import SupernovaCosmologyModels
@@ -34,8 +36,10 @@ configure_plot_style()
 
 st.title("Hubble Diagram")
 st.markdown(
-    "Distance modulus versus redshift for the JLA sample, with the "
-    "best-fit model curve and a residuals panel. Use the sidebar to switch between fits."
+     "Distance modulus versus redshift for the JLA sample. Select any "
+    "combination of fit strategies in the sidebar to overlay them on "
+    "the data. Each fit tells a different story about what the "
+    "universe is made of."
 )
 st.markdown("---")
 
@@ -70,25 +74,47 @@ with st.expander("What do these terms mean?", expanded=False):
  ##AI produced scientific explanation
 
 # -- Sidebar: choose which fit to display --------------------------------
-st.sidebar.markdown("### Fit strategy")
-fit_choice = st.sidebar.radio(
-    "Which best-fit curve should be shown?",
-    options=[
-        "Flat universe (curvature is 1)",
-        "Density fit at fixed H0 (Nobel Prize style)",
-        "Empty universe (Hubble constant only)",
-    ],
-    index=0,
+st.sidebar.markdown("### Fits to display")
+st.sidebar.markdown(
+    "Select any combination. Each is run through "
+    "``scipy.optimize.curve_fit`` on the JLA data."
+)
+ 
+show_empty = st.sidebar.checkbox(
+    "Empty universe (H\u2080 only)",
+    value=False,
     help=(
-        "All three use scipy.optimize.curve_fit. They differ in which "
-        "parameters are held fixed versus fitted. See the Methodology "
-        "page for a discussion of why H0 is normally held fixed in "
-        "supernova-only analyses."
+        "No matter, no dark energy. Only H\u2080 is fit. The classical "
+        "Hubble-law limit."
+    ),
+)
+show_matter_only = st.sidebar.checkbox(
+    "Matter-only universe (\u03A9\u2098 only)",
+    value=True,
+    help=(
+        "No dark energy. \u03A9\u2098 is fit, \u03A9\u039B = 0 "
+        "enforced, H\u2080 held at 70. Represents the pre-1998 "
+        "consensus view."
+    ),
+)
+show_density = st.sidebar.checkbox(
+    "Full density fit (\u03A9\u2098 and \u03A9\u039B)",
+    value=True,
+    help=(
+        "Both density parameters free, H\u2080 held at 70. This matches "
+        "the 1998 Perlmutter/Riess analyses -- flatness is NOT assumed."
     ),
 )
  
+st.sidebar.markdown("---")
+st.sidebar.markdown("### Display")
+use_log_axis = st.sidebar.toggle(
+    "Logarithmic redshift axis", value=True,
+    help="Log spreads out low-z points; linear is easier to read.",
+)
+show_residuals = st.sidebar.toggle("Show residuals panel", value=True)
  
-# -- Load data ----------------------------------------------------------
+ # -- Load data ----------------------------------------------------------
 dataframe = get_supernova_dataframe()
 dataframe = get_standardised_distance_moduli(dataframe)
  
@@ -96,96 +122,62 @@ z_data = dataframe["redshift"].to_numpy()
 mu_data = dataframe["mu"].to_numpy()
  
  
-# -- Run the selected fit -----------------------------------------------
+# -- Run selected fits --------------------------------------------------
 optimizer = SupernovaOptimizer()
- 
-if fit_choice.startswith("Flat"):
-    fit = optimizer.fit_flat_universe(z_data, mu_data)
-    fit_label = "Flat LambdaCDM (Omega_m + Omega_Lambda = 1)"
-    n_free_params = 1
-elif fit_choice.startswith("Density"):
-    fit = optimizer.fit_density_parameters(z_data, mu_data)
-    fit_label = "Density-fit at fixed H0 = 70"
-    n_free_params = 2
-else:
-    fit = optimizer.fit_empty_universe_hubble(z_data, mu_data)
-    # empty-universe fit doesn't return density params -- fill in zeros
-    fit = {
-        **fit,
-        "matterDensity": 0.0,
-        "darkEnergyDensity": 0.0,
-    }
-    fit_label = "Empty universe (Milne)"
-    n_free_params = 1
- 
-# -- Display fit results as a strip of metrics --------------------------
-st.markdown(f"#### Fit result: {fit_label}")
-m1, m2, m3 = st.columns(3)
-m1.metric(
-    "H0 (km/s/Mpc)",
-    f"{fit['hubbleConstant']:.2f}",
-    delta=(f"± {fit['hubbleConstantError']:.2f}"
-           if fit['hubbleConstantError'] > 0 else "held fixed"),
-    delta_color="off",
-)
-m2.metric(
-    "Omega_m",
-    f"{fit['matterDensity']:.3f}",
-    delta=(f"± {fit.get('matterDensityError', 0):.3f}"
-           if fit.get('matterDensityError', 0) > 0 else "--"),
-    delta_color="off",
-)
-m3.metric(
-    "Omega_Lambda",
-    f"{fit['darkEnergyDensity']:.3f}",
-    delta=(f"± {fit.get('darkEnergyDensityError', 0):.3f}"
-           if fit.get('darkEnergyDensityError', 0) > 0 else "--"),
-    delta_color="off",
-)
- 
-# -- Compute model curves ------------------------------------------------
 models = SupernovaCosmologyModels()
  
 z_curve = np.logspace(
     np.log10(z_data.min() * 0.9), np.log10(z_data.max() * 1.1), 200
 )
-
-# For the empty-universe fit, use the closed-form model. Otherwise use
-# the full integral with the fitted densities.
-if fit_choice.startswith("Empty"):
-    mu_curve = models.calculate_empty_universe_model(
-        z_curve, fit["hubbleConstant"]
-    )
-    mu_model_at_data = models.calculate_empty_universe_model(
-        z_data, fit["hubbleConstant"]
-    )
-else:
-    mu_curve = models.calculate_advanced_cosmological_model(
-        z_curve,
-        fit["hubbleConstant"],
-        fit["matterDensity"],
-        fit["darkEnergyDensity"],
-    )
-    mu_model_at_data = models.calculate_advanced_cosmological_model(
-        z_data,
-        fit["hubbleConstant"],
-        fit["matterDensity"],
-        fit["darkEnergyDensity"],
-    )
  
-residuals = mu_data - mu_model_at_data
-
-# -- Display options -----------------------------------------------------
-controls_a, controls_b = st.columns([1, 1])
-with controls_a:
-    use_log_axis = st.toggle(
-        "Logarithmic redshift axis",
-        value=True,
+# Each entry: (label, color, linestyle, n_params, fit_dict, mu_curve,
+# mu_at_data). Built only for selected fits.
+fit_entries = []
+ 
+if show_empty:
+    fit = optimizer.fit_empty_universe_hubble(z_data, mu_data)
+    mu_curve = models.calculate_empty_universe_model(z_curve, fit["hubbleConstant"])
+    mu_at_data = models.calculate_empty_universe_model(z_data, fit["hubbleConstant"])
+    fit_entries.append((
+        "Empty universe", COLOR_EMPTY, "--", 1, fit, mu_curve, mu_at_data,
+    ))
+ 
+if show_matter_only:
+    fit = optimizer.fit_matter_only(z_data, mu_data)
+    mu_curve = models.calculate_advanced_cosmological_model(
+        z_curve, fit["hubbleConstant"], fit["matterDensity"], 0.0
     )
-with controls_b:
-    show_residuals = st.toggle("Show residuals panel", value=True)
-
-# -- Build the figure ----------------------------------------------------
+    mu_at_data = models.calculate_advanced_cosmological_model(
+        z_data, fit["hubbleConstant"], fit["matterDensity"], 0.0
+    )
+    fit_entries.append((
+        "Matter-only", COLOR_MATTER, "-.", 1, fit, mu_curve, mu_at_data,
+    ))
+ 
+if show_density:
+    fit = optimizer.fit_density_parameters(z_data, mu_data)
+    mu_curve = models.calculate_advanced_cosmological_model(
+        z_curve, fit["hubbleConstant"],
+        fit["matterDensity"], fit["darkEnergyDensity"],
+    )
+    mu_at_data = models.calculate_advanced_cosmological_model(
+        z_data, fit["hubbleConstant"],
+        fit["matterDensity"], fit["darkEnergyDensity"],
+    )
+    fit_entries.append((
+        "Full density fit", COLOR_FIT, "-", 2, fit, mu_curve, mu_at_data,
+    ))
+ 
+ 
+if not fit_entries:
+    st.warning(
+        "No fits selected. Check at least one box in the sidebar to "
+        "display a best-fit curve."
+    )
+    st.stop()
+ 
+ 
+# -- Build the figure ---------------------------------------------------
 if show_residuals:
     fig, (ax_main, ax_res) = plt.subplots(
         2, 1, figsize=(11, 7),
@@ -196,24 +188,27 @@ else:
     fig, ax_main = plt.subplots(figsize=(11, 6))
     ax_res = None
  
-# Main panel
+# Main panel: data + each selected curve
 ax_main.scatter(
     z_data, mu_data,
-    color=Color_DATA, s=14, alpha=0.7, edgecolor="none",
+    color=COLOR_DATA, s=14, alpha=0.7, edgecolor="none",
     label=f"JLA data (n = {len(dataframe)})",
+    zorder=1,
 )
-ax_main.plot(
-    z_curve, mu_curve,
-    color=Color_FIT, linewidth=2.2,
-    label=fit_label,
-)
+for (label, color, linestyle, _n_p, fit, mu_curve, _mu_at_data) in fit_entries:
+    full_label = (
+        f"{label}: "
+        f"H\u2080={fit['hubbleConstant']:.1f}, "
+        f"\u03A9\u2098={fit['matterDensity']:.2f}, "
+        f"\u03A9\u039B={fit['darkEnergyDensity']:.2f}"
+    )
+    ax_main.plot(
+        z_curve, mu_curve,
+        color=color, linewidth=2.2, linestyle=linestyle,
+        label=full_label, zorder=3,
+    )
 ax_main.set_ylabel("Distance modulus $\\mu$")
-ax_main.set_title(format_cosmology_string(
-    fit["hubbleConstant"],
-    fit["matterDensity"],
-    fit["darkEnergyDensity"],
-))
-ax_main.legend(loc="lower right")
+ax_main.legend(loc="lower right", fontsize=9)
 if use_log_axis:
     ax_main.set_xscale("log")
 if not show_residuals:
@@ -221,42 +216,59 @@ if not show_residuals:
  
 # Residuals panel
 if ax_res is not None:
-    ax_res.scatter(
-        z_data, residuals,
-        color=Color_DATA, s=10, alpha=0.6, edgecolor="none",
-    )
-    ax_res.axhline(0.0, color=Color_FIT, linewidth=1.5, linestyle="--")
+    ax_res.axhline(0.0, color=COLOR_MUTED, linewidth=1.0, linestyle=":")
+    for (label, color, linestyle, _n_p, _fit, _mu_curve, mu_at_data) in fit_entries:
+        residuals_this = mu_data - mu_at_data
+        ax_res.scatter(
+            z_data, residuals_this,
+            color=color, s=8, alpha=0.45, edgecolor="none",
+        )
     ax_res.set_ylabel("$\\mu_{\\rm data} - \\mu_{\\rm model}$")
     ax_res.set_xlabel("Redshift z")
     if use_log_axis:
         ax_res.set_xscale("log")
  
-    residual_rms = float(np.sqrt(np.mean(residuals ** 2)))
-    ax_res.text(
-        0.02, 0.9, f"RMS residual = {residual_rms:.3f} mag",
-        transform=ax_res.transAxes,
-        color=Color_MUTED, fontsize=10, verticalalignment="top",
-    )
- 
 st.pyplot(fig, clear_figure=True)
-
-# -- Chi-squared report -------------------------------------------------
-gof = optimizer.calculate_goodness_of_fit(
-    mu_data, mu_model_at_data, numberOfParameters=n_free_params,
-)
  
-st.markdown(
-    f"#### Goodness of fit  \n"
-    f"chi-squared = **{gof['chiSquared']:.1f}**,  "
-    f"reduced chi-squared = **{gof['reducedChiSquared']:.2f}**,  "
-    f"degrees of freedom = **{gof['degreesOfFreedom']}**."
-)
+ 
+# -- Side-by-side fit-results table ------------------------------------
+st.markdown("#### Fit results")
+ 
+cols = st.columns(len(fit_entries))
+for col, (label, _color, _ls, n_p, fit, _mu_curve, mu_at_data) in zip(cols, fit_entries):
+    with col:
+        st.markdown(f"**{label}**")
+ 
+        # Build display strings explicitly to avoid nested-f-string escaping.
+        h0_err = fit.get("hubbleConstantError", 0.0)
+        h0_str = f"H\u2080      = {fit['hubbleConstant']:.2f}"
+        if h0_err > 0:
+            h0_str += f"  ± {h0_err:.2f}"
+        st.text(h0_str)
+ 
+        om_err = fit.get("matterDensityError", 0.0)
+        om_str = f"\u03A9\u2098     = {fit['matterDensity']:.3f}"
+        if om_err > 0:
+            om_str += f"  ± {om_err:.3f}"
+        st.text(om_str)
+ 
+        ol_err = fit.get("darkEnergyDensityError", 0.0)
+        ol_str = f"\u03A9\u039B     = {fit['darkEnergyDensity']:.3f}"
+        if ol_err > 0:
+            ol_str += f"  ± {ol_err:.3f}"
+        st.text(ol_str)
+ 
+        gof = optimizer.calculate_goodness_of_fit(
+            mu_data, mu_at_data, numberOfParameters=n_p,
+        )
+        st.text(f"\u03C7\u00B2       = {gof['chiSquared']:.1f}")
+        st.text(f"\u03C7\u00B2 / dof = {gof['reducedChiSquared']:.2f}")
+ 
 st.caption(
-    "A reduced chi-squared close to 1 indicates a model that matches "
-    "the data at roughly the level of the assumed per-point uncertainty "
-    "(sigma_mu = 0.15 mag). Much larger than 1 means the model cannot "
-    "explain all the scatter; much smaller than 1 means we have "
-    "probably overestimated the per-point uncertainty."
+    "Lower chi-squared means a better fit. The data prefer the fit "
+    "with the smallest reduced chi-squared, and that preference is "
+    "the rigorous statistical evidence for the content of the "
+    "universe."
 )
  
 # -- Interpretation note ------------------------------------------------

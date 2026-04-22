@@ -22,12 +22,12 @@ Project structure:
 """
 
 import streamlit as st
-from src.app_utils import get_supernova_dataframe, Color_FIT, Color_DATA
+from src.app_utils import get_supernova_dataframe, COLOR_FIT, COLOR_DATA
 
 
 # -- Page configuration -- must be the first Streamlit call ---------------
 st.set_page_config(
-    page_title="Type Ia Supernova Hubble Diagram",
+    page_title="Home",
     page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
@@ -37,7 +37,7 @@ st.set_page_config(
 # -- Header --------------------------------------------------------------
 st.title("Type Ia Supernova Hubble Diagram")
 st.markdown(
-    f"<p style='color:{Color_FIT}; font-size:1.1rem; font-style:italic; "
+    f"<p style='color:{COLOR_FIT}; font-size:1.1rem; font-style:italic; "
     f"margin-top:-0.75rem;'>"
     "The observations that revealed cosmic acceleration."
     "</p>",
@@ -120,7 +120,7 @@ with stats_col:
 # -- Footer --------------------------------------------------------------
 st.markdown("---")
 st.markdown(
-    f"<p style='color:{Color_DATA}; font-size:0.9rem;'>"
+    f"<p style='color:{COLOR_DATA}; font-size:0.9rem;'>"
     "ASTRO 1221 Project 3 &nbsp;|&nbsp; "
     "Casey Bartman, Lauren Bryant, and Andrew Schlemmer"
     "</p>",

@@ -29,11 +29,11 @@ from src.constants import SUPERNOVA_KEYS, JSON_FILENAME
 Color_BACKGROUND = "#0a1628"
 Color_PANEL      = "#13233a"
 Color_TEXT       = "#e8eef5"
-Color_MUTED      = "#7a8ba3"
-Color_DATA       = "#4ecdc4"   # teal -- observed supernovae
-Color_FIT        = "#ffa62b"   # amber -- best-fit 
-Color_EMPTY      = "#a17cd9"   # violet -- empty universe
-Color_MATTER     = "#e65a7a"   # rose   -- matter-only (Einstein-de Sitter)
+COLOR_MUTED      = "#7a8ba3"
+COLOR_DATA       = "#4ecdc4"   # teal -- observed supernovae
+COLOR_FIT        = "#ffa62b"   # amber -- best-fit 
+COLOR_EMPTY      = "#a17cd9"   # violet -- empty universe
+COLOR_MATTER     = "#e65a7a"   # rose   -- matter-only (Einstein-de Sitter)
 Color_GRID       = "#1f3350"
 
 
@@ -106,18 +106,18 @@ def configure_plot_style():
     plt.rcParams.update({
         "figure.facecolor":  Color_BACKGROUND,
         "axes.facecolor":    Color_PANEL,
-        "axes.edgecolor":    Color_MUTED,
+        "axes.edgecolor":    COLOR_MUTED,
         "axes.labelcolor":   Color_TEXT,
         "axes.titlecolor":   Color_TEXT,
         "axes.grid":         True,
         "grid.color":        Color_GRID,
         "grid.linestyle":    ":",
         "grid.alpha":        0.6,
-        "xtick.color":       Color_MUTED,
-        "ytick.color":       Color_MUTED,
+        "xtick.color":       COLOR_MUTED,
+        "ytick.color":       COLOR_MUTED,
         "text.color":        Color_TEXT,
         "legend.facecolor":  Color_PANEL,
-        "legend.edgecolor":  Color_MUTED,
+        "legend.edgecolor":  COLOR_MUTED,
         "legend.labelcolor": Color_TEXT,
         "font.family":       "serif",
         "font.size":         11,

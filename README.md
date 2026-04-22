@@ -5,7 +5,7 @@
 
 ### App instructions:
 To run the app:
-**$ streamlit run app.py**
+**$ streamlit run Home.py**
 may need to copy and past the local URL from terminal if it does not pop up automatically
 
 # Project Goal:

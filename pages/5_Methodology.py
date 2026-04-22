@@ -7,7 +7,7 @@ this project. Functions as the astronomical verification record."""
 
 import streamlit as st
 
-from src.app_utils import configure_plot_style, Color_FIT
+from src.app_utils import configure_plot_style, COLOR_FIT
 
 
 st.set_page_config(page_title="Methodology", layout="wide")
@@ -210,7 +210,7 @@ st.markdown(
 st.header("5. References")
 st.markdown(
     f"""
-    <div style='border-left:4px solid {Color_FIT}; padding-left:1rem;'>
+    <div style='border-left:4px solid {COLOR_FIT}; padding-left:1rem;'>
     <p>
     <strong>Ryden, B. &amp; Peterson, B. M.</strong> (2010).
     <em>Foundations of Astrophysics</em>. Pearson.

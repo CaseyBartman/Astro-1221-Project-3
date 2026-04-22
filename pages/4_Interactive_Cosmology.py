@@ -23,9 +23,9 @@ from src.app_utils import (
     configure_plot_style,
     format_cosmology_string,
     compute_deceleration_parameter,
-    Color_DATA,
-    Color_FIT,
-    Color_EMPTY,
+    COLOR_DATA,
+    COLOR_FIT,
+    COLOR_EMPTY,
 )
 from src.models import SupernovaCosmologyModels
 
@@ -158,18 +158,18 @@ fig, ax = plt.subplots(figsize=(11, 6))
 
 ax.scatter(
     z_data, mu_data,
-    color=Color_DATA, s=12, alpha=0.55, edgecolor="none",
+    color=COLOR_DATA, s=12, alpha=0.55, edgecolor="none",
     label=f"JLA data (n = {len(dataframe)})",
     zorder=1,
 )
 ax.plot(
     z_curve, mu_milne,
-    color=Color_EMPTY, linewidth=1.6, linestyle="--",
+    color=COLOR_EMPTY, linewidth=1.6, linestyle="--",
     label="Empty universe (Milne)", zorder=2,
 )
 ax.plot(
     z_curve, mu_your_universe,
-    color=Color_FIT, linewidth=2.4,
+    color=COLOR_FIT, linewidth=2.4,
     label="Your universe", zorder=3,
 )
 ax.set_xscale("log")

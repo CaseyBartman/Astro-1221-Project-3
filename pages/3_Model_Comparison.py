@@ -20,10 +20,10 @@ from src.app_utils import (
     get_supernova_dataframe,
     get_standardised_distance_moduli,
     configure_plot_style,
-    Color_DATA,
-    Color_FIT,
-    Color_EMPTY,
-    Color_MATTER,
+    COLOR_DATA,
+    COLOR_FIT,
+    COLOR_EMPTY,
+    COLOR_MATTER,
 )
 from src.models import SupernovaCosmologyModels
 
@@ -125,25 +125,25 @@ fig, (ax_main, ax_res) = plt.subplots(
 # Upper panel: data + three curves
 ax_main.scatter(
     z_data, mu_data,
-    color=Color_DATA, s=12, alpha=0.55, edgecolor="none",
+    color=COLOR_DATA, s=12, alpha=0.55, edgecolor="none",
     label=f"JLA data (n = {len(dataframe)})",
     zorder=1,
 )
 ax_main.plot(
     z_curve, mu_empty,
-    color=Color_EMPTY, linewidth=2.0, linestyle="--",
+    color=COLOR_EMPTY, linewidth=2.0, linestyle="--",
     label="Empty (Milne):   $\\Omega_m=0,\\; \\Omega_\\Lambda=0$",
     zorder=3,
 )
 ax_main.plot(
     z_curve, mu_matter,
-    color=Color_MATTER, linewidth=2.0, linestyle="-.",
+    color=COLOR_MATTER, linewidth=2.0, linestyle="-.",
     label="Matter-only (EdS): $\\Omega_m=1,\\; \\Omega_\\Lambda=0$",
     zorder=3,
 )
 ax_main.plot(
     z_curve, mu_lcdm,
-    color=Color_FIT, linewidth=2.4,
+    color=COLOR_FIT, linewidth=2.4,
     label="Consensus ($\\Lambda$CDM): $\\Omega_m=0.3,\\; \\Omega_\\Lambda=0.7$",
     zorder=4,
 )
@@ -155,19 +155,19 @@ ax_main.legend(loc="lower right", fontsize=9)
 # Lower panel: residuals relative to the Lambda-CDM consensus
 ax_res.scatter(
     z_data, residuals_data,
-    color=Color_DATA, s=10, alpha=0.55, edgecolor="none",
+    color=COLOR_DATA, s=10, alpha=0.55, edgecolor="none",
     zorder=1,
 )
-ax_res.axhline(0.0, color=Color_FIT, linewidth=1.8, linestyle="-",
+ax_res.axhline(0.0, color=COLOR_FIT, linewidth=1.8, linestyle="-",
                label="$\\Lambda$CDM reference")
 ax_res.plot(
     z_curve, residuals_empty,
-    color=Color_EMPTY, linewidth=1.8, linestyle="--",
+    color=COLOR_EMPTY, linewidth=1.8, linestyle="--",
     label="Empty - $\\Lambda$CDM",
 )
 ax_res.plot(
     z_curve, residuals_matter,
-    color=Color_MATTER, linewidth=1.8, linestyle="-.",
+    color=COLOR_MATTER, linewidth=1.8, linestyle="-.",
     label="Matter-only - $\\Lambda$CDM",
 )
 ax_res.set_xscale("log")
