@@ -1,16 +1,15 @@
-"""
-Shared helpers for the Streamlit application.
+# Shared helpers for the Streamlit application.
 
-All Streamlit pages import from this module so that data loading is cached
-(avoiding repeated downloads and re-parsing of the JLA JSON file) and
-so that plots across pages share a consistent visual style.
+# All Streamlit pages import from this module so that data loading is cached
+# (avoiding repeated downloads and re-parsing of the JLA JSON file) and
+# so that plots across pages share a consistent visual style.
  
-Contents:
-    get_supernova_dataframe   
-    configure_plot_style        
-    format_cosmology_string     
-    compute_deceleration_param  
-"""
+# Contents:
+#     get_supernova_dataframe   
+#     configure_plot_style        
+#     format_cosmology_string     
+#     compute_deceleration_param  
+
 
 from pathlib import Path
 
@@ -39,20 +38,13 @@ Color_GRID       = "#1f3350"
 
 @st.cache_data(show_spinner="Fetching the JLA supernova compilation...")
 def get_supernova_dataframe():
-    """
-    Load, parse, and clean the Type Ia supernova dataset. Downloads the
-    Wolfram-hosted JSON if it is not already present in the project root,
-    then flattens it into a Pandas DataFrame with numeric physics columns.
+    # Load, parse, and clean the Type Ia supernova dataset. Downloads the
+    # Wolfram-hosted JSON if it is not already present in the project root,
+    # then flattens it into a Pandas DataFrame with numeric physics columns.
 
-    The result is cached by Streamlit so repeat page navigations do not
-    re-trigger the download.
+    # The result is cached by Streamlit so repeat page navigations do not
+    # re-trigger the download.
 
-    Returns
-    -------
-    pd.DataFrame
-        Columns: ``supernova name``, ``redshift``, ``magnitude``,
-        ``stretch``, ``color``. All physical columns are ``float``.
-    """
     loader = SupernovaDataLoader()
     processor = SupernovaDataProcessor()
 
@@ -68,24 +60,12 @@ def get_supernova_dataframe():
 
 @st.cache_data
 def get_standardised_distance_moduli(dataframe):
-    """
-    Apply the Tripp relation to the cleaned dataset and return distance moduli.
+    # Apply the Tripp relation to the cleaned dataset and return distance moduli.
 
-    This wraps ``SupernovaCosmologyModels.calculate_distance_modulus`` and
-    attaches the result as a new column ``mu`` without mutating the input
-    DataFrame.
+    # This wraps ``SupernovaCosmologyModels.calculate_distance_modulus`` and
+    # attaches the result as a new column ``mu`` without mutating the input
+    # DataFrame.
 
-    Parameters
-    ----------
-    dataframe : pd.DataFrame
-        The output of ``get_supernova_dataframe``.
-
-    Returns
-    -------
-    pd.DataFrame
-        Copy of the input with an added ``mu`` column (Tripp-standardised
-        distance modulus, dimensionless / magnitudes).
-    """
     models = SupernovaCosmologyModels()
     result = dataframe.copy()
     result["mu"] = models.calculate_distance_modulus(
@@ -97,12 +77,11 @@ def get_standardised_distance_moduli(dataframe):
 
 
 def configure_plot_style():
-    """
-    Apply the observatory dark theme to matplotlib so plots blend with the
-    Streamlit dark background.
+    # Apply the observatory dark theme to matplotlib so plots blend with the
+    # Streamlit dark background.
 
-    Should be called once at the top of each page, after ``st.set_page_config``.
-    """
+    # Called once at the top of each page, after ``st.set_page_config``.
+
     plt.rcParams.update({
         "figure.facecolor":  Color_BACKGROUND,
         "axes.facecolor":    Color_PANEL,
@@ -127,23 +106,6 @@ def configure_plot_style():
 
 
 def format_cosmology_string(hubble_constant, matter_density, dark_energy_density):
-    """
-    Build a short human-readable label describing a cosmological model.
-
-    Parameters
-    ----------
-    hubble_constant : float
-        H0 in km/s/Mpc.
-    matter_density : float
-        Omega_m (dimensionless).
-    dark_energy_density : float
-        Omega_Lambda (dimensionless).
-
-    Returns
-    -------
-    str
-        E.g. ``"H0 = 70.0 | Omega_m = 0.30 | Omega_L = 0.70"``.
-    """
     return (
         f"H\u2080 = {hubble_constant:.1f} km/s/Mpc   "
         f"\u03A9\u2098 = {matter_density:.2f}   "
@@ -152,30 +114,16 @@ def format_cosmology_string(hubble_constant, matter_density, dark_energy_density
 
 
 def compute_deceleration_parameter(matter_density, dark_energy_density):
-    """
-    Compute the present-day deceleration parameter q0.
+    # Compute the present-day deceleration parameter q0.
 
-    From Ryden & Peterson eq. 24.37, neglecting radiation (which is valid
-    for all supernova redshifts), the acceleration of the scale factor at
-    the present epoch is proportional to ``-Omega_m/2 + Omega_Lambda``.
-    The deceleration parameter is conventionally defined with a sign
-    flip so that q0 > 0 means the expansion is slowing down:
+    # From Ryden & Peterson eq. 24.37, neglecting radiation (which is valid
+    # for all supernova redshifts), the acceleration of the scale factor at
+    # the present epoch is proportional to ``-Omega_m/2 + Omega_Lambda``.
+    # The deceleration parameter is conventionally defined with a sign
+    # flip so that q0 > 0 means the expansion is slowing down:
 
-        q0 = Omega_m / 2 - Omega_Lambda
+    #     q0 = Omega_m / 2 - Omega_Lambda
 
-    A negative q0 indicates an accelerating universe -- which is exactly
-    what the 1998 Type Ia supernova observations discovered.
-
-    Parameters
-    ----------
-    matter_density : float
-        Omega_m (dimensionless).
-    dark_energy_density : float
-        Omega_Lambda (dimensionless).
-
-    Returns
-    -------
-    float
-        Deceleration parameter at the present epoch (dimensionless).
-    """
+    # A negative q0 indicates an accelerating universe -- which is exactly
+    # what the 1998 Type Ia supernova observations discovered.
     return matter_density / 2.0 - dark_energy_density
