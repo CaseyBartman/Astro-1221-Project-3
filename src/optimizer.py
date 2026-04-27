@@ -263,7 +263,7 @@ if __name__ == "__main__":
     print(f"  Omega_m = {r3['matterDensity']:.3f} +/- {r3['matterDensityError']:.3f}")
     print(f"  Omega_L = {r3['darkEnergyDensity']:.3f} +/- {r3['darkEnergyDensityError']:.3f}")
 
-# -----Small description for Wednesday
+# -----Description for Wednesday in case I clam up and forget everything
 # The optimizer fits three different possible universes. There is code for an empty-universe fit, a matter-only fit, and 
 # a fit that includes dark energy. All three models use scipy.optimize.curve_fit. The empty universe is the simplest 
 # possible fit, assuming there is no matter and no dark energy. The model function it fits against is the 

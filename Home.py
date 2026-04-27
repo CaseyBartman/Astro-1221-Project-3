@@ -8,7 +8,7 @@
 #     streamlit run Home.py
 
 # Project structure:
-#     app.py                         
+#     Home.py                         
 #     pages/                         
 #       1_Data_Explorer.py         
 #       2_Hubble_Diagram.py          
@@ -64,14 +64,14 @@ with narrative_col:
     st.header("What is our Project?")
     st.markdown(
         """
-        In 1988, findings of Type 1a supernovae showed that these supernovae were fainter than expected
-        Type 1a supernovae come from explosions of white dwarfs at the end of their lifespan which produce consistent luminosity.
+        In 1988, findings of Type Ia supernovae showed that these supernovae were fainter than expected
+        Type Ia supernovae come from explosions of white dwarfs at the end of their lifespan which produce consistent luminosity.
         They are considered "standard candles", they are predictable. However, with data showing these "standard candles" as fainter
         than calculated IF the universe was not expanding. The teams that worked on this project were able to show that
         the universe was not slowing down due to gravity but rather accelerating due to an unknown force. Dark Energy. In 2011, one half of a Nobel Prize was awarded to 
         Saul Perlmutter, and the other half between Brain P. Schmidt and Adam G. Riess. Their work is observational evidence of what we now call dark energy.
 
-        This project attempts to reproduce this anaylsis using the JLA SN 1a 
+        This project attempts to reproduce this anaylsis using the JLA SN Ia 
         compilation: 580 Type Ia supernovae spanning redshifts from
         ``z = 0.015`` to ``z > 1``. We wanted to make it interactive to be able to see exactly how researchers came to their conclusions.
         You can explore how the matter density and dark-energy density change the predicted relationship between distance and redshift of the standard candles.
@@ -84,7 +84,7 @@ with narrative_col:
         """
         Use the sidebar to move between pages.
 
-        - **Data Explorer** -- examine the dataset. Lokk through the 732 supernovae,
+        - **Data Explorer** -- examine the dataset. Look through the 732 supernovae,
           search by name, filter by redshift, and see the measurements actually mean.
         - **Hubble Diagram** -- the classic plot. Distance modulus versus
           redshift, overlaid with the best-fit expansion model. You can pick between three

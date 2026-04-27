@@ -1,17 +1,21 @@
-"""
-Interactive Cosmology page
-==========================
+# Interactive Cosmology page
+# ==========================
 
-Live sliders for ``H_0``, ``Omega_m``, and ``Omega_Lambda``. As the user
-drags, the predicted Hubble curve updates in real time over the JLA
-data. Displays the present-day deceleration parameter ``q_0`` so the user
-can see directly when the universe they have built is accelerating.
+# We have sliders for ``H_0``, ``Omega_m``, and ``Omega_Lambda``. As the user
+# drags, the predicted Hubble curve updates in real time over the JLA
+# data. It displays the present-day deceleration parameter ``q_0`` so the user
+# can see directly when the universe they have built is accelerating.
 
-By moving the parameters and watching the curve bend, a viewer can develop direct
-intuition for why the 1998 supernova data ruled out a matter-only
-universe.
+# By moving the parameters and watching the curve bend, we can develop direct
+# intuition for why the 1998 supernova data ruled out a matter-only
+# universe.
 
-"""
+# Though I have realized post presenation, that holding the Hubble Constant to 68 would 
+# be for a better fit. My 2292 class takes the Hubble Constant to be 68 whenever we do which 
+# now makes so much sense. If we were to redo this, I would take the constant to be 68 instead.
+# I don't feel like doing any more larger tweaks to the working code, but 70 works fine enough for 
+# our visualization!
+
 
 import matplotlib.pyplot as plt
 import numpy as np
