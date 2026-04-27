@@ -1,30 +1,25 @@
-
 # Type Ia Supernova Hubble Diagram -- Streamlit Application
 # =========================================================
-
 # Main entry point and home page for the app!
 # Run from the project with::
-
 #     streamlit run Home.py
-
 # Project structure:
-#     Home.py                         
-#     pages/                         
-#       1_Data_Explorer.py         
-#       2_Hubble_Diagram.py          
-#       3_Model_Comparison.py        
-#       4_Interactive_Cosmology.py   
-#       5_Methodology.py             
-#     src/                           
-#     pipeline_tester.py             
-
+#     Home.py
+#     pages/
+#       1_Data_Explorer.py
+#       2_Hubble_Diagram.py
+#       3_Model_Comparison.py
+#       4_Interactive_Cosmology.py
+#       5_Methodology.py
+#     src/
+#     pipeline_tester.py
 #     Lauren Bryant (Streamlit application and astronomical verification).
-
-
-## This is bascially just visualization for the home page of the Streamlit app. 
+## This is basically just visualization for the home page of the Streamlit app.
 
 import streamlit as st
+
 from src.app_utils import get_supernova_dataframe, COLOR_FIT, COLOR_DATA
+
 
 # -- Page configuration -- must be the first Streamlit call ---------------
 
@@ -35,11 +30,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-## Sets up the title of the page in the sidebar, sets up how I want the page to be set up.
+## Sets up the title of the page in the sidebar, sets up how I want the page to look.
 
 # -- Header --------------------------------------------------------------
 
-st.title("Type 1a Supernova Hubble Diagram")
+st.title("Type Ia Supernova Hubble Diagram")
 st.markdown(
     f"<p style='color:{COLOR_FIT}; font-size:1.1rem; font-style:italic; "
     f"margin-top:-0.75rem;'>"
@@ -79,7 +74,7 @@ with narrative_col:
         """
     )
 
-    st.header("How to Navigate")
+    st.header("How to navigate")
     st.markdown(
         """
         Use the sidebar to move between pages.
@@ -98,6 +93,7 @@ with narrative_col:
         - **Methodology** -- a written record of the physics with references 
           to Ryden & Peterson, Tripp 1998, Hogg 1999, and the Nobel press release.
         """
+
     )
 
 ## This sets up what is called the narrative column, this tells us about our project and how to navigate 
@@ -121,7 +117,7 @@ with stats_col:
         )
     except Exception as error:
         st.warning(
-            "Dataset not yet loaded. Click below to fetch the Union2.1 "
+            "Dataset not yet loaded. Click below to fetch the JLA "
             "compilation from the Wolfram Data Repository."
         )
         st.caption(f"(Details: {error})")
@@ -130,7 +126,8 @@ with stats_col:
             st.rerun()
 
 ## this one is a little more confusing than our narrative column since it is not just wording.
-ADD MORE HERE
+## We load the dataset and get three stats from it, how many supernova, and the redshift they span from
+## If that fails, there is an except block instead of crashing the app
 
 # -- Footer --------------------------------------------------------------
 
@@ -145,7 +142,7 @@ st.markdown(
 
 ## The last thing on our front page is a small footer, with the title of our Project/our names
 
-# Little script for myself for presenting Wednesday - delete before turn in
+# Little script for myself for presenting Wednesday - all streamlit pages
 # ---Home
 # This page is a broad overview of what the project is, the Nobel Prize it was based on, and the findings they uncovered. 
 # We want to reproduce the findings that led to the 2011 Nobel Prize by using the Joint Light-curve Analysis or the JLA compilation of about 732 Type Ia supernovae. 
