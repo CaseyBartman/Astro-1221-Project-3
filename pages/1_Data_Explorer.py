@@ -98,6 +98,8 @@ st.subheader("Search and filter")
  
 search_col, slider_col = st.columns([2, 3])
  
+## sets up two columns for the search bar and slider, with the slider being larger to accomdate the redshift range
+
 with search_col:
     search_term = st.text_input(
         "Search by name",
@@ -107,7 +109,8 @@ with search_col:
             "Case-insensitive substring match. Leave blank to show all."
         ),
     )
- 
+ ## We set up our search bar here with our search_col. 
+
 with slider_col:
     z_min_global = float(dataframe["redshift"].min())
     z_max_global = float(dataframe["redshift"].max())
@@ -119,6 +122,11 @@ with slider_col:
         value=(z_min_global, z_max_global),
         step=0.01,
     )
+
+## The slider pulls from the data in app_utils.py to find the absolute maximum of redshift for the
+## data and the absoulute minimum. Which in the next block of code will become the max and min redshifts
+## for the slider. Since redshift values are not very large, the step size was only 0.01 to accomadate small
+## change in redshifts.
  
 # Apply filters
 filtered = dataframe[
@@ -131,6 +139,12 @@ if search_term.strip():
         search_term.strip(), case=False, na=False
     )
     filtered = filtered[mask]
+
+## This is the actual execution of the search and filter section. The first bit keeps only the rows
+## the redshift falls under, so if the slider was toggled, there becomes a new max and min and the data will
+## reflect that by showing only the rows that fall with that interval. 
+## The first bit sets up a new variable filtered for the adjusted data and the second bit of code adds onto that variable
+## If something is typed into the search bar, it narrows down filtered more by adding the mask term
  
 # -- Summary metrics ----------------------------------------------------
 
@@ -145,6 +159,10 @@ if len(filtered) > 0:
 else:
     metric_b.metric("Median redshift", "--")
     metric_c.metric("Median apparent magnitude", "--")
+
+## under the search and slider, there is a brief overview of how many supernovae are displayed and characteritics about the group
+## To find the number of supernovae shown, we pull from the previously mentioned filtered variable
+## And if there are any supernovae displayed then we compute the median redshift and median app. magnitude.
  
 # -- Data table ---------------------------------------------------------
 
@@ -166,6 +184,10 @@ else:
         hide_index=True,
     )
 
+## Finally for the whole point of the page, the data table of all supernovae that are within the filtered variable
+## We say that if filtered shows no supernovae, then there's nothing for the data table to produce
+## and if there is anything nonzero, we pull all the data for the filtered supernovae and arrange their data in columns
+
 # -- Distribution plots -------------------------------------------------
 
 if len(filtered) > 0:
@@ -178,9 +200,13 @@ if len(filtered) > 0:
         " of supernovae are in the sample."
     )
  
+## Here we are arranging certain parameters in the supernovae as charts of some kind, each one is a little different, obviously.
+
     fig, axes = plt.subplots(2, 2, figsize=(11, 7))
     fig.subplots_adjust(hspace=0.35, wspace=0.3)
  
+## we create space for 4 subplots in a 2x2 matrix looking setup
+
     # Redshift distribution
     axes[0, 0].hist(
         filtered["redshift"], bins=40,
@@ -199,6 +225,11 @@ if len(filtered) > 0:
     axes[0, 1].set_ylabel("Count")
     axes[0, 1].set_title("Apparent-magnitude distribution")
  
+## the code for the top row of plots in almost idenitical. Most things are relatively self explainatory by looking at it.
+## We create axes for the [0,0] plot which is the top left one in the form of a histogram
+## Bins tells matplotlib how many bars to cut the data into, 40 was picked because it looked good on the distrubutions
+## And alpha is the transparency of the bars, if they were at 1 then it would be fully solid. 
+
     # Stretch vs Color -- the Tripp plane
     axes[1, 0].scatter(
         filtered["stretch"], filtered["color"],
@@ -218,6 +249,9 @@ if len(filtered) > 0:
     axes[1, 1].set_ylabel("Distance modulus $\\mu$")
     axes[1, 1].set_title("Hubble diagram preview")
  
+## Instead of histograms, both of these lowers plots are scatter plots. They pull from data from the filtered variable
+## to show off different parameters of the supernovae
+
     st.pyplot(fig, clear_figure=True)
  
     st.markdown(
@@ -250,3 +284,5 @@ if len(filtered) > 0:
           line of dots with fittings over it to prove certain aspects of the universe.
         """
     )
+
+## Quick description of each plot! Helps to know if you can't pick up what they are trying to say just from looking at them.
