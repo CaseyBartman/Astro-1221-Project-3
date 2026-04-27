@@ -1,16 +1,18 @@
-"""
-Model Comparison page
-=====================
+# Model Comparison page
+# =====================
 
-Three cosmological models plotted together on the same Hubble diagram:
+# Three cosmological models plotted together on the same Hubble diagram:
 
-- Empty (Milne) universe: ``Omega_m = 0``, ``Omega_Lambda = 0``.
-- Matter-only (Einstein-de Sitter): ``Omega_m = 1``, ``Omega_Lambda = 0``.
-- Lambda-CDM consensus: ``Omega_m = 0.3``, ``Omega_Lambda = 0.7``.
+# - Empty (Milne) universe: ``Omega_m = 0``, ``Omega_Lambda = 0``.
+# - Matter-only (Einstein-de Sitter): ``Omega_m = 1``, ``Omega_Lambda = 0``.
+# - Lambda-CDM consensus: ``Omega_m = 0.3``, ``Omega_Lambda = 0.7``.
 
-This is the page that "shows dark energy": the data visibly prefer the
-Lambda-CDM curve over the matter-only alternative at high redshift.
-"""
+# This is the page that "shows dark energy": the data visibly prefer the
+# Lambda-CDM curve over the matter-only alternative at high redshift.
+
+# This and the next page are two of my favorites, really pages 2-4 are very close
+# in what they display but I thought the small differences would be cool. I like seeing
+# all three models that we decided to play with over one another (if chosen). 
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,6 +43,7 @@ st.markdown(
 st.markdown("---")
 
 # -- Explanation of what this page is for -------------------------------
+
 with st.expander("What is this page trying to show?", expanded=True):
     st.markdown(
         """
@@ -52,7 +55,7 @@ with st.expander("What is this page trying to show?", expanded=True):
         the same data points.
  
         - **Empty universe (Milne)** -- assumes the universe contains
-          no matter and no dark energy, just pure expansion. A useful
+          no matter and no dark energy. A useful
           blank hypothesis: if the data sit on this curve, the universe
           has nothing in it. If they sit above or below, the universe
           has *something*. And we know the universe has something, so we assume
@@ -61,11 +64,11 @@ with st.expander("What is this page trying to show?", expanded=True):
           is full of ordinary matter (``Omega_m = 1``) and has no dark
           energy. This is what physicists expected before 1998. Gravity
           should slow the expansion down over time.
-        - **Lambda-CDM consensus** -- assumes the universe is ~30%
+        - **Dark Energy consensus** -- assumes the universe is ~30%
           matter and ~70% dark energy, which is what fits the data.
           Dark energy makes the expansion *speed up* over time.
  
-        The lower panel of the figure below removes the Lambda-CDM
+        The lower panel of the figure below removes the Dark Energy
         curve and plots everything as the difference from it. That is
         where the matter-only curve's disagreement with the data
         becomes unmistakable.
@@ -73,11 +76,13 @@ with st.expander("What is this page trying to show?", expanded=True):
     )
  
 # -- Shared constants ---------------------------------------------------
+
 H0_SHARED = 70.0
 models = SupernovaCosmologyModels()
 
 
 # -- Data and curves ----------------------------------------------------
+
 dataframe = get_supernova_dataframe()
 dataframe = get_standardised_distance_moduli(dataframe)
 
@@ -116,6 +121,7 @@ residuals_matter = mu_matter - models.calculate_advanced_cosmological_model(
 
 
 # -- Main figure --------------------------------------------------------
+
 fig, (ax_main, ax_res) = plt.subplots(
     2, 1, figsize=(11, 8),
     gridspec_kw={"height_ratios": [3, 1.4], "hspace": 0.08},
@@ -152,7 +158,7 @@ ax_main.set_ylabel("Distance modulus $\\mu$")
 ax_main.set_title("Three cosmologies, one dataset")
 ax_main.legend(loc="lower right", fontsize=9)
 
-# Lower panel: residuals relative to the Lambda-CDM consensus
+# Lower panel: residuals relative to the Dark Energy consensus
 ax_res.scatter(
     z_data, residuals_data,
     color=COLOR_DATA, s=10, alpha=0.55, edgecolor="none",
@@ -179,6 +185,7 @@ st.pyplot(fig, clear_figure=True)
 
 
 # -- Interpretation -----------------------------------------------------
+
 st.markdown(
     """
     #### What this figure shows
