@@ -1,9 +1,8 @@
-"""
-Methodology page
-================
+# Methodology page
+# ================
 
-Written record of the physics and computational methodology used in
-this project. Functions as the astronomical verification record."""
+# Written record of the physics and computational methodology used in
+# this project. Functions as the astronomical verification record.
 
 import streamlit as st
 
@@ -18,50 +17,53 @@ st.title("Methodology")
 st.markdown(
     "A written record of what the code computes, what was checked, and "
     "what had to be corrected. Each physics claim is tied to a reference "
-    "and, where the reference is the course textbook (Ryden & Peterson), "
-    "to a specific chapter and equation number."
+    "and, when the reference is the course textbook (Ryden & Peterson), "
+    "it's linked to a specific chapter and equation number."
 )
+
 st.markdown("---")
 
 
 # -- Dataset -----------------------------------------------------------
+
 st.header("1. Dataset")
 st.markdown(
      """
     This project uses the **JLA compilation** of Type Ia supernovae
-    published by Betoule et al. 2014 (A&A 568, A22). (the Joint
-    Light-curve Analysis) JLA succeeds the older Union2.1 compilation (Suzuki et al. 2012)
+    published by Betoule et al. 2014 (A&A 568, A22). JLA (Joint
+    Light-curve Analysis) succeeds the older Union2.1 compilation (Suzuki et al. 2012)
     as the preferred standard for supernova cosmology analyses, and our
     pipeline retrieves it from the Wolfram Data Repository (Bradley
     2022). The compilation extends from local supernovae at
     ``z = 0.01`` through HST discoveries near ``z = 1.3``, which is
-    precisely the redshift range needed to detect the signature of
+    the redshift range needed to detect the signature of
     cosmic acceleration.
  
     After cleaning, 732 supernovae remain in the sample. The raw records
     contain four physical columns for each supernova:
  
     - ``redshift`` -- heliocentric redshift z.
-    - ``magnitude`` -- peak apparent brightness in the B band, ``m_B``.
-    - ``stretch`` -- the SALT2 light-curve stretch parameter s, measuring
+    - ``magnitude`` -- peak apparent brightness in the B (blue) band, ``m_B``.
+    - ``stretch`` -- the light-curve stretch parameter s measures
       how slowly the supernova fades after peak. Values are centred
       near one.
-    - ``color`` -- the SALT2 Color parameter c, approximately the
-      dereddened (B - V) Color at peak. Centred near zero.
+    - ``color`` -- the color parameter c is approximately the
+      dereddened (B - V) color at peak. Centred near zero.
     """
 )
 
 
 # -- Standardisation ---------------------------------------------------
+
 st.header("2. Standardising the supernovae: the Tripp relation")
 st.markdown(
     """
     Type Ia supernovae are near-standard candles, so their intrinsic peak
-    luminosities are similar but not identical. The empirical correlations
-    that tighten them into usable standard candles were first formalised
+    luminosities are similar but not identical. The correlations
+    that force them into usable standard candles were first formalised
     by Tripp (1998, A&A 331, 815), who showed that supernovae with
     broader light curves (higher stretch) are intrinsically more luminous,
-    and supernovae that are redder at peak (higher Color c) are
+    and supernovae that are redder at peak (higher color c) are
     intrinsically fainter. Correcting for these two trends reduces the
     scatter in peak luminosity from around 0.3 mag to roughly 0.12 mag.
 
@@ -74,29 +76,28 @@ st.latex(
 )
 st.markdown(
     """
-    with nuisance parameters held at standard SALT2 values
+    with other parameters held at standard SALT2 values
     ``alpha = 0.14``, ``beta = 3.1``, and absolute magnitude
     ``M = -19.3`` mag. The sign convention follows Tripp (1998) and
     Mandel et al. (2017, ApJ 842, 93).
 
     **note.** The original implementation used ``alpha * s`` rather
     than ``alpha * (s - 1)``. Because the JLA stretch values are
-    centred near one rather than zero, this introduced a constant offset
+    centred near one rather than zero, this introduced an offset
     of ``alpha * 1 = 0.14`` mag which would have been absorbed into an
     effective absolute magnitude during fitting. The correction was made
-    to preserve the literal interpretation of M = -19.3 as the true
+    to preserve M = -19.3 as the true
     absolute peak magnitude.
     """
 )
 
 
 # -- Cosmological distance ---------------------------------------------
-st.header("3. Predicting distance modulus from cosmology")
+
+st.header("3. Predicting distance modulus")
 st.markdown(
     """
-    Type Ia supernovae tell us cosmology because the distance modulus
-    varies with redshift in a way that depends on the geometry and
-    contents of the universe. Following Ryden & Peterson eq. 24.35 and
+    Following Ryden & Peterson eq. 24.35 and
     Hogg 1999 (arXiv:astro-ph/9905116), for a spatially flat universe
     dominated by matter and a cosmological constant, the luminosity
     distance is:
@@ -111,7 +112,7 @@ st.latex(
 )
 st.markdown(
     """
-    and the observed distance modulus follows from the standard
+    and the observed distance modulus follows from the
     logarithmic definition (Ryden & Peterson eq. 13.25):
     """
 )
@@ -127,10 +128,10 @@ st.markdown(
     contributes at the ``10^-5`` level to the total energy budget today
     and never reaches 1% importance below ``z ~ 3400``, far above any
     redshift in the supernova sample. Spatial curvature ``Omega_k`` is
-    also assumed to vanish. Lambda-CDM-like fits respect this, but if
+    also assumed to be 0. Lambda-CDM-like fits respect this, but if
     the user explores combinations with ``Omega_m + Omega_Lambda`` far
     from one on the Interactive Cosmology page, the curve shown is a
-    flat-universe approximation and not the true non-flat prediction.
+    flat-universe approximation.
 
     #### The low-redshift (empty-universe) limit
 
@@ -155,28 +156,27 @@ st.markdown(
     missing factor is small at ``z < 0.05`` but reaches
     ``5 log(1.5) ~ 0.88`` mag at ``z = 0.5``. This is larger than the
     dark-energy signature itself (about 0.25 mag at z = 0.5), so the
-    uncorrected curve would have been systematically displaced from the
-    data in a way that would confound any comparison to the data. The
-    correction aligns the function with Ryden & Peterson eq. 24.42.
+    uncorrected curve would have been displaced from the
+    data in a way that would throw off any meaningful comparison to the data. The
+    correction is from the function from Ryden & Peterson eq. 24.42.
     """
 )
 
 
 # -- Fitting -----------------------------------------------------------
+
 st.header("4. Fitting the data")
 st.markdown(
     """
-    With the distance-modulus-versus-redshift relation in hand, the task
+    With the distance-modulus-versus-redshift relation, the task
     is to find the cosmological parameters ``(H_0, Omega_m, Omega_Lambda)``
     that best reproduce the observed ``(z_i, mu_i)`` points from the
-    JLA compilation. This is a standard non-linear least-squares
-    problem, which in this project is solved using ``scipy.optimize.curve_fit``. The
-    optimiser returns the best-fit parameters and their covariance
-    matrix, parameter uncertainties are the square roots of the diagonal
-    covariance entries.
+    JLA compilation. ``scipy.optimize.curve_fit``
+    returns the best-fit parameters and their covariance
+    matrix.
 
      **Three fit strategies.** ``src/optimizer.py`` provides three
-    complementary fits:
+     fits:
  
     - ``fit_empty_universe_hubble`` -- one free parameter (``H_0``)
       using the closed-form empty-universe model. The classical
@@ -191,22 +191,22 @@ st.markdown(
       Attempting to fit both at once produces a near-singular
       covariance matrix and uncertainty estimates that blow up.
       Fixing ``H_0`` is the principled solution.
-    - ``fit_flat_universe`` -- one free parameter (``Omega_m``)
-      with flatness enforced (``Omega_Lambda = 1 - Omega_m``). The
-      tightest one-number answer the data can give.
+    - ``fit_matter_only`` -- This is the pre 1998 view that only matter 
+    existed in our universe. With ``Omega_Lambda`` going to 0, and our Hubble
+    Constant being held fixed like in our model with dark energy. 
 
-    Whether it was a good fit is characterised by reduced chi-squared: the sum of
-    squared residuals weighted by the per-point uncertainty, divided by
-    the number of degrees of freedom. JLA
+    Whether it was a good fit is shown by reduced chi-squared. JLA
     reports per-supernova distance-modulus uncertainties in the
-    0.12-0.25 mag range; a single-number stand-in of ``sigma_mu =
-    0.15`` mag is used here. Incorporating the per-point
-    uncertainties is a future enhancement.
+    0.12-0.25 mag range; we only used ``sigma_mu =
+    0.15`` here as an overall statement for all the uncertainties. We could very well in the future try to use
+    per-point uncertainties, but right now that seemed like unnecessary work
+    for a very similar output. 
     """
 )
 
 
 # -- References --------------------------------------------------------
+
 st.header("5. References")
 st.markdown(
     f"""
@@ -251,3 +251,13 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+## all of this code is either a markdown cell or st.latex (which displays mathematical expressions)
+## Any explanantion of the code can be summed up to we used st.markdown and st.latex to explain our work
+## and equations that we used. The diction used for st.latex was confusing so I had more help on that than in
+## a lot of other places.
+## I laid out the base understanding of the project and what we did to accomplish the results, the used AI to help
+## me polish it into more formal documentation. Without it my writing sounded (we used this equation! it was very useful
+## for this thing) which is just fine, but I felt as though it did not reflect the tone of the rest of the project. 
+## I also had a bit of help through sources that created citations for you.
