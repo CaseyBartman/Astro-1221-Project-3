@@ -75,11 +75,17 @@ with st.expander("What is this page trying to show?", expanded=True):
         """
     )
  
+## I think at this point, this type of set up for each page has been seen enough to where more explanation would be redundant
+
 # -- Shared constants ---------------------------------------------------
 
 H0_SHARED = 70.0
 models = SupernovaCosmologyModels()
 
+## shared constants just means that each fit will use the same values here. 
+## The hubble constant is shared because the point of this page is to compare the different models
+## If the constant varied you could not tell whether the differences were with the value of the constant or the H values.
+## 70 is reasonable enough, if we were to do this project again I would prefer to work with 68 but it does what it needs to do!
 
 # -- Data and curves ----------------------------------------------------
 
@@ -92,6 +98,10 @@ mu_data = dataframe["mu"].to_numpy()
 z_curve = np.logspace(
     np.log10(z_data.min() * 0.9), np.log10(z_data.max() * 1.1), 200
 )
+
+
+## We load the JLA dataset then pull out the redshift and distance modulus columns as NumPy arrays.
+## Similar to the Hubble Diagram page, we made a 200-point array for the redshifts evenly spaced in a log scale.
 
 # Empty (Milne) universe: closed-form luminosity distance, no integral needed.
 mu_empty = models.calculate_empty_universe_model(z_curve, H0_SHARED)
@@ -106,8 +116,13 @@ mu_lcdm = models.calculate_advanced_cosmological_model(
     z_curve, H0_SHARED, 0.3, 0.7
 )
 
-# Residuals: deviation of each model from the consensus, at the data redshifts,
-# to make the dark-energy signature visible on the bottom panel.
+## These are our three models that we have seen numerous times already.
+## This computes the predicted distance modulus at each of the 200 grid points for the three models
+## none of these are fits, there was no optimizer for this one. This is what each model PREDICTS independent of the data,
+## The point is to see how the guesses look agaisnt the actual measurements and fits of other pages. 
+## Even with just guesses we can easily tell which model is the best for our universe. 
+
+
 mu_lcdm_at_data = models.calculate_advanced_cosmological_model(
     z_data, H0_SHARED, 0.3, 0.7
 )
@@ -119,6 +134,8 @@ residuals_matter = mu_matter - models.calculate_advanced_cosmological_model(
     z_curve, H0_SHARED, 0.3, 0.7
 )
 
+# Residuals: deviation of each model from the consensus, at the data redshifts,
+# to make the dark-energy signature visible on the bottom panel.
 
 # -- Main figure --------------------------------------------------------
 
@@ -127,6 +144,9 @@ fig, (ax_main, ax_res) = plt.subplots(
     gridspec_kw={"height_ratios": [3, 1.4], "hspace": 0.08},
     sharex=True,
 )
+
+## setting up another 2 panel subplot with the main groph on top and bigger, and the residuals on bottom and a little smaller
+## sharex=true links the panel's x-axis since they will both show the same redshift
 
 # Upper panel: data + three curves
 ax_main.scatter(
@@ -158,6 +178,9 @@ ax_main.set_ylabel("Distance modulus $\\mu$")
 ax_main.set_title("Three cosmologies, one dataset")
 ax_main.legend(loc="lower right", fontsize=9)
 
+## This scatters the data then plots each model on top of it, each model is assigned a different color and line style
+## This is build the visual representation of the guesses we have been making
+
 # Lower panel: residuals relative to the Dark Energy consensus
 ax_res.scatter(
     z_data, residuals_data,
@@ -180,6 +203,9 @@ ax_res.set_xscale("log")
 ax_res.set_xlabel("Redshift z")
 ax_res.set_ylabel("$\\mu - \\mu_{\\Lambda{\\rm CDM}}$")
 ax_res.legend(loc="lower left", fontsize=8, ncol=3)
+
+##This is doing something very similar to the main plot, we added a horizontal reference line at 0.
+## the line for our lambda model lays ontop of that reference line
 
 st.pyplot(fig, clear_figure=True)
 
@@ -213,4 +239,4 @@ st.markdown(
     """
 )
 
-##AI assisted Scientific explanation
+## AI assisted Scientific explanation
