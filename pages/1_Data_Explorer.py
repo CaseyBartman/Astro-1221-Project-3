@@ -22,11 +22,13 @@ configure_plot_style()
 st.title("Data Explorer")
 st.markdown(
     "Look at the JLA Type Ia supernovae complilation, each row is one"
-    "supernova. Expand the glossary below to understand the column names and their physical measurements"
+    " supernova. Expand the glossary below to understand the column names and their physical measurements"
 )
 st.markdown("---")
 
 ## Sets up the sidebar for this tab and the main title for the page itself with a small description of what's in it. 
+## A lot of this code is not necessary to the actual content of the project, I've decicded ways that may be a little extra
+## to portray the code that we have done. Adding descriptions and dividers were not important but I thought it to be more presentable.'
 
 #-- Column Glossary ------------------------------------------------------------
 
@@ -43,7 +45,7 @@ with st.expander ("What do the columns actually mean?", expanded=False):
         supernova and us. Redshift is what we use as the "distance" axis in a Hubble
         diagram, because it is measured directly from the spectrum and
         is independent of any distance calibration. It has everything to do with the Dopple
-        shift since light has wave like attributes. We would calculate 'z' in various ways, one including an equation called Hubble's Law.
+        shift since light acts like a wave. We would calculate 'z' in various ways, one including an equation called Hubble's Law.
         Blueshifts (z<0) are when objects are approaching us, and redshift (z>0) is when an object is leaving us. 
  
         **magnitude (m_B)** -- this is the **apparent** peak brightness in the
@@ -170,8 +172,10 @@ if len(filtered) > 0:
     st.subheader("Distributions")
     st.markdown(
         "The four panels below show how the current selection is "
-        "distributed across the main quantities. Together they "
-        "tell you at a glance what kind of supernovae are in the sample."
+        "distributed across the main quantities. They will change if"
+        " a name is searched or the redshift slider is toggled to reflect that"
+        " specific grouping. Together they tell you at a glance what kind"
+        " of supernovae are in the sample."
     )
  
     fig, axes = plt.subplots(2, 2, figsize=(11, 7))
@@ -223,21 +227,26 @@ if len(filtered) > 0:
         - **Redshift distribution (top left)** -- most supernovae are
           at low-to-moderate redshift, because nearby supernovae are
           easier to find. The long tail toward ``z ~ 1`` is the
-          crucial part for cosmology: the high-z supernovae are where
-          dark energy leaves a visible signature.
+          crucial part, the high-z supernovae are where
+          dark energy is more apparent. This plots each redshift (not in a log scale) as a bar.
+          It's basically counting the number of supernovae in each redshift area, as we see a lot of 
+          supernovae have redshift of 0.4 or less and very few have a redshift larger than 1.
+          We wanted to be able to visual the number od supernovae in each category. 
         - **Magnitude distribution (top right)** -- the apparent-
           magnitude distribution tracks the redshift distribution,
-          because more distant supernovae look fainter. Sharp survey
-          flux limits show up here as abrupt edges.
+          because more distant supernovae look fainter. Similar to the redshift distribution, this 
+          chart graphs the count of supernovae in different apparent magnitudes. As we can see, a lot of them
+          live in the 20-24 range. 
         - **Tripp plane (bottom left)** -- shows every supernova's
-          stretch versus Color, Colored by redshift. The cluster
+          stretch versus color, colored by redshift. The cluster
           near ``s = 1`` and ``c = 0`` is the "typical" Type Ia; the
           scatter around that is what the Tripp correction flattens
-          out to turn the supernovae into standard candles.
+          out to turn the supernovae into standard candles. We use the data from the two columns
+          for color and stretch to plot the Tripp Plane.
         - **Hubble diagram preview (bottom right)** -- a sneak peek
-          of the main science plot. The tight band of points is the
+          of the main plot. The band of points is the
           standard-candle relationship; supernovae at higher redshift
-          have higher distance modulus, as they should.
+          have higher distance modulus. On the next couple of pages we will see this
+          line of dots with fittings over it to prove certain aspects of the universe.
         """
     )
-    ##used AI to help with longer scientific explanations
