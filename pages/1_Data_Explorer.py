@@ -1,10 +1,8 @@
-"""
-Data Explorer page
-==================
+# Data Explorer page
+# ==================
 
-Look at the cleaned JLA compilation, search by name, filter by redshift, and
-see what each column actually measures. Each plot has a note explaining what it shows and why we care!
-"""
+# Look at the cleaned JLA compilation, search by name, filter by redshift, and
+# see what each column actually measures. Each plot has a note explaining what it shows and why we care!
 
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -21,7 +19,6 @@ from src.app_utils import (
 st.set_page_config(page_title="Data Explorer", layout="wide")
 configure_plot_style()
 
-
 st.title("Data Explorer")
 st.markdown(
     "Look at the JLA Type 1a supernovae complilation, each row is one"
@@ -29,7 +26,10 @@ st.markdown(
 )
 st.markdown("---")
 
+## Sets up the sidebar for this tab and the main title for the page itself with a small description of what's in it. 
+
 #-- Column Glossary ------------------------------------------------------------
+
 with st.expander ("What do the columns actually mean?", expanded=False):
     st.markdown(
         """
@@ -81,12 +81,17 @@ with st.expander ("What do the columns actually mean?", expanded=False):
         """
     )
 
+## I personally forget often want certain variables mean and how they fit into the broader scheme of the project 
+## For the viewer and for myself, I thought it would have been nice to have a detailed description of each variable and 
+## how they were calculated. 
+
 # -- Load data -----------------------------------------------------------
+
 dataframe = get_supernova_dataframe()
 dataframe = get_standardised_distance_moduli(dataframe)
 
-
 # -- Search and filter --------------------------------------------------
+
 st.subheader("Search and filter")
  
 search_col, slider_col = st.columns([2, 3])
@@ -125,8 +130,8 @@ if search_term.strip():
     )
     filtered = filtered[mask]
  
- 
 # -- Summary metrics ----------------------------------------------------
+
 metric_a, metric_b, metric_c = st.columns(3)
 metric_a.metric("Matching supernovae", f"{len(filtered):,} / {len(dataframe):,}")
 if len(filtered) > 0:
@@ -140,6 +145,7 @@ else:
     metric_c.metric("Median apparent magnitude", "--")
  
 # -- Data table ---------------------------------------------------------
+
 st.subheader("Matching records")
 st.markdown(
     "The ``mu`` column is the Tripp-standardised distance modulus "
@@ -158,8 +164,8 @@ else:
         hide_index=True,
     )
 
-
 # -- Distribution plots -------------------------------------------------
+
 if len(filtered) > 0:
     st.subheader("Distributions")
     st.markdown(
