@@ -1,32 +1,33 @@
 
-"""
-Type Ia Supernova Hubble Diagram -- Streamlit Application
-=========================================================
+# Type Ia Supernova Hubble Diagram -- Streamlit Application
+# =========================================================
 
-Main entry point and home page for the app!
-Run from the project with::
+# Main entry point and home page for the app!
+# Run from the project with::
 
-    streamlit run app.py
+#     streamlit run Home.py
 
-Project structure:
-    app.py                         
-    pages/                         
-      1_Data_Explorer.py         
-      2_Hubble_Diagram.py          
-      3_Model_Comparison.py        
-      4_Interactive_Cosmology.py   
-      5_Methodology.py             
-    src/                           
-    pipeline_tester.py             
+# Project structure:
+#     app.py                         
+#     pages/                         
+#       1_Data_Explorer.py         
+#       2_Hubble_Diagram.py          
+#       3_Model_Comparison.py        
+#       4_Interactive_Cosmology.py   
+#       5_Methodology.py             
+#     src/                           
+#     pipeline_tester.py             
 
-    Lauren Bryant (Streamlit application and astronomical verification).
-"""
+#     Lauren Bryant (Streamlit application and astronomical verification).
+
+
+## This is bascially just visualization for the home page of the Streamlit app. 
 
 import streamlit as st
 from src.app_utils import get_supernova_dataframe, COLOR_FIT, COLOR_DATA
 
-
 # -- Page configuration -- must be the first Streamlit call ---------------
+
 st.set_page_config(
     page_title="Home",
     page_icon=None,
@@ -34,9 +35,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+## Sets up the title of the page in the sidebar, sets up how I want the page to be set up.
 
 # -- Header --------------------------------------------------------------
-st.title("Type Ia Supernova Hubble Diagram")
+
+st.title("Type 1a Supernova Hubble Diagram")
 st.markdown(
     f"<p style='color:{COLOR_FIT}; font-size:1.1rem; font-style:italic; "
     f"margin-top:-0.75rem;'>"
@@ -47,9 +50,15 @@ st.markdown(
 
 st.markdown("---")
 
+## This sets up the Heading and Subheading on the actual page, not the sidebar like the code up above.
+## Eveytime you see the st.markdown("---") that's just creating a small bar below the writing to seperate the different parts
 
 # -- Left column: narrative ----------------------------------------------
+
 narrative_col, stats_col = st.columns([3, 2], gap="large")
+
+## st.columns creates two side-by-side containers for whatever, so we put the narrative next to our stats column
+## at a 3:2 ratio, the narrative column is 1.5 times wider than the other column
 
 with narrative_col:
     st.header("What is our Project?")
@@ -91,8 +100,11 @@ with narrative_col:
         """
     )
 
+## This sets up what is called the narrative column, this tells us about our project and how to navigate 
+## our streamlit app. It was very straightforward and the only thing was typing all of the descriptions. 
 
 # -- Right column: quick stats ------------------------------------------
+
 with stats_col:
     st.header("Dataset at a glance")
     try:
@@ -117,8 +129,11 @@ with stats_col:
             get_supernova_dataframe.clear()
             st.rerun()
 
+## this one is a little more confusing than our narrative column since it is not just wording.
+ADD MORE HERE
 
 # -- Footer --------------------------------------------------------------
+
 st.markdown("---")
 st.markdown(
     f"<p style='color:{COLOR_DATA}; font-size:0.9rem;'>"
@@ -128,7 +143,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
+## The last thing on our front page is a small footer, with the title of our Project/our names
 
 # Little script for myself for presenting Wednesday - delete before turn in
 # ---Home
