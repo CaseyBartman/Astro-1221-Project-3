@@ -41,13 +41,14 @@ configure_plot_style()
 st.title("Interactive Cosmology")
 st.markdown(
     "Set the three numbers that define the universe to anything."
-    "The Hubble constant is the expansion rate today, Omega m is the matter content"
-    "and Omega Lambda is the dark-energy content. The teal points are the measured supernovae"
+    " The Hubble constant is the expansion rate today, Omega m is the matter content"
+    "and Omega Lambda is the dark-energy content. The teal points are the measured supernovae "
     "and the yellow curve is the universe that was determined by the sliders"
 )
 st.markdown("---")
 
 # -- Quick explainer ----------------------------------------------------
+
 with st.expander("What does 'interactive' mean on this page?", expanded=False):
     st.markdown(
         """
@@ -61,7 +62,11 @@ with st.expander("What does 'interactive' mean on this page?", expanded=False):
         """
     )
  
+## the first few blocks of code need very little explanation, we created the title and description of the main page with a small
+## expandable explanation of what this page is!
+
 # -- Sliders ------------------------------------------------------------
+
 slider_col, info_col = st.columns([2, 1], gap="large")
 
 with slider_col:
@@ -95,11 +100,20 @@ with slider_col:
         ),
     )
 
+## The whole idea of this page is that you can play with the parameters yourself to see how any small changes might affect the best fit
+## We have created sliders for Omega M and Lambda as well as the Hubble Constant, because even though we held the constant constant, it doesn't have to be that value
+## each slider has a min, max, auto values, and a stepsize depending on the parameter
+## Once again, if you are like I have no idea what these mean you can hover over a little ? in streamlit and it will give you a small note on the slider
+
 with info_col:
     st.subheader("Diagnostics")
 
     total_density = matter_density + dark_energy_density
     q0 = compute_deceleration_parameter(matter_density, dark_energy_density)
+
+## the total density should equal 1, addition of both matter and dark energy. This is only accounting for a flat universe
+## our function compute_deceleration_parameter was defined in app_utils.py and we call it here to display the actual product of that computation
+## depending on the parameters chosen, this all is shown off to the side next to the sliders.
 
     st.metric(
         "\u03A9_total  = \u03A9\u2098 + \u03A9\u039B",
@@ -120,6 +134,12 @@ with info_col:
         ),
     )
 
+## There are two things under the diagnostics display, one shows the Omega total, and the gross numbers and letters you see there is code to be 
+## able to display the proper subscripts and greel letters.
+## The second one displays the deceleration parameter, it will tell you if the universe based on the parameters is accelerating or decelerating and by how much
+## If you omega total is above one, it will warn you that we cant really do that well since that would not be a flat universe like we are using.
+## So we approximate it with the flat universe, so it is not helpful to have the sliders at anything above a total of 1.
+
     if abs(total_density - 1.0) > 0.05:
         st.caption(
             ":orange[Note: this model is not spatially flat. The code "
@@ -127,8 +147,10 @@ with info_col:
             "shown are approximate for non-flat inputs.]"
         )
 
+## This is where that warning is created
 
 # -- Data and curves ----------------------------------------------------
+
 dataframe = get_supernova_dataframe()
 dataframe = get_standardised_distance_moduli(dataframe)
 z_data = dataframe["redshift"].to_numpy()
@@ -140,9 +162,6 @@ z_curve = np.logspace(
     np.log10(z_data.min() * 0.9), np.log10(z_data.max() * 1.1), 200
 )
 
-# Your-universe curve. Use the closed-form empty-universe formula when both
-# density parameters are effectively zero, because the numerical integral
-# has a removable singularity in that limit.
 if matter_density < 1e-3 and dark_energy_density < 1e-3:
     mu_your_universe = models.calculate_empty_universe_model(
         z_curve, hubble_constant
@@ -152,13 +171,23 @@ else:
         z_curve, hubble_constant, matter_density, dark_energy_density,
     )
 
-# Milne reference curve at the same H0 -- visually anchors "no dark energy,
-# no matter" for comparison.
+## when both denisty parameters are equal to 0, then 1/sqrt(0) is infinity, and that is not a good number for us.
+## The closed form of calculate empty universe model uses a forumla that does not run into this problem.
+## The threshold is 0.001 which is small enough to be effectively zero, so if the user meant 0, then they will get close enough.
+## this just handles the case in which everything is set to 0.
+
+
 mu_milne = models.calculate_empty_universe_model(z_curve, hubble_constant)
 
+## this computes an empty universe with the same Ho that the user pciked as a reference curve always seen in the plot. 
+## Without a reference, you cant tell if what you drew was correct or not. The line is always going to be off of the dataset, 
+## it's not intended to be the correct fit, but it is for comparison to be able to see the correct fit. 
 
 # -- Plot ---------------------------------------------------------------
+
 fig, ax = plt.subplots(figsize=(11, 6))
+
+## creates our figure!
 
 ax.scatter(
     z_data, mu_data,
@@ -176,6 +205,10 @@ ax.plot(
     color=COLOR_FIT, linewidth=2.4,
     label="Your universe", zorder=3,
 )
+
+## This plots our data as a scatter and then our always there empty universe fit, and then it will plot the universe the user calculated
+## it's a lot of the same set up we've been seeing in the other pages. 
+
 ax.set_xscale("log")
 ax.set_xlabel("Redshift z")
 ax.set_ylabel("Distance modulus $\\mu$")
@@ -188,6 +221,7 @@ st.pyplot(fig, clear_figure=True)
 
 
 # -- Structured experiments --------------------------------------------
+
 st.markdown("### Suggested experiments")
 st.markdown(
     "Each block below asks you to try a specific parameter combination "
@@ -204,7 +238,7 @@ with st.expander(
         **Set:** ``Omega_m = 1.00``,  ``Omega_Lambda = 0.00``,
         ``H_0 = 70``
  
-        **Watch:** the amber curve will drop noticeably below the data
+        **Watch:** the yellow curve will drop noticeably below the data
         points at high redshift (``z > 0.3``).
  
         **Why this matters:** this is the "matter-only" or
@@ -229,9 +263,9 @@ with st.expander(
         **Set:** ``Omega_m = 0.30``,  ``Omega_Lambda = 0.70``,
         ``H_0 = 70``
  
-        **Watch:** the curve lands cleanly on top of the data.
+        **Watch:** the curve lands on top of the data.
  
-        **Why this matters:** these are the Lambda-CDM consensus
+        **Why this matters:** these are the Dark Energy consensus
         values. Together they predict that the universe contains 30%
         matter and 70% dark energy. The close agreement between
         curve and data is the reason this combination is called the
@@ -281,3 +315,7 @@ with st.expander(
         """
     )
  
+## finally, this is just an unnecessary but neat little section on suggested universes you could create with the sliders.
+## each expierment would show you something about the data, and I feel as though the point is more easilt understood if you get
+## to manipulate the variables yourself and see why changing certain ones get you different results
+## I took inspiration from our last project with the tour guide and I thought it would be nice to have a similar thing here.
